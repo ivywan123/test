@@ -1,0 +1,17 @@
+{
+  "renewTrans":{
+    "id":1112,
+    "tradeId":50190606102001,
+    "orgEndTradeDate":"2019-06-06 00:00:00",
+    "curEndTradeDate":"2019-06-11 00:00:00",
+    "cost":13.5,
+    "status":1,
+    "lstUpdTm":"2019-06-06 15:45:58",
+    "lstUpdPsn":50190606102001,
+    "crtTm":"2019-06-06 15:45:58",
+    "crtPsn":50190606102001,
+    "recStatId":10101,
+    "tradeDays":1
+  },
+  "success":true
+}

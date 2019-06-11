@@ -1,0 +1,11 @@
+database:
+  niudb:
+    url: 192.168.1.60
+    dbname: niudb
+    user: root
+    pwd: root
+  cntrsys:
+    url: 192.168.1.60
+    dbname: cntrsys
+    user: root
+    pwd: root
