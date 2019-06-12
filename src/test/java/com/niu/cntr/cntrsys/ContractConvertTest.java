@@ -46,7 +46,7 @@ public class ContractConvertTest {
         String old_productId = "52825118558251";  //原合约产品
         Response re = func.trade_new(old_productId,5000,10,0);
         //买入股票
-        Long cntrId = re.path("trade.tradeId");
+        Integer cntrId = re.path("trade.tradeId");
         Long tradeId = re.path("trade.id");
         Long accountId = re.path("trade.accountId");
         func.sendOrder(accountId,tradeId,"300178",200);

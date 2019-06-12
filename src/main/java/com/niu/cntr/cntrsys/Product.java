@@ -15,6 +15,9 @@ public class Product extends Contact {
     //1、查询某品牌下的所有产品
     public Response list(Long brandId){
         HashMap<String,Object> map=new HashMap<>();
+        if(brandId == null){
+            brandId = 0L;
+        }
         map.put("brandId",brandId);
         return getResponseFromYaml("/CntrApi/product_list.yaml",map);
     }

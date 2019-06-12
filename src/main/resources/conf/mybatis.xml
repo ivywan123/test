@@ -9,7 +9,7 @@
      -->
     <typeAliases>
         <!-- <typeAlias type="com.fpc.Entity.User" alias="_User"/> -->
-        <package name="com.fpc.Entity"/>
+        <package name="com.niu.cntr"/>
     </typeAliases>
     <environments default="development">
         <environment id="development">

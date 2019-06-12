@@ -1,0 +1,31 @@
+{
+  "list":[
+    {
+      "stockCode":"002199",
+      "stockName":"东晶电子",
+      "stockBalance":1235,
+      "availableQty":100,
+      "qty":100,
+      "costValue":22.1,
+      "price":12.35,
+      "cost":2210,
+      "loss":-975,
+      "lossRatio":-44.12,
+      "suspension":true
+    },
+    {
+      "stockCode":"002579",
+      "stockName":"中京电子",
+      "stockBalance":932,
+      "availableQty":100,
+      "qty":100,
+      "costValue":8.55,
+      "price":9.32,
+      "cost":855.02,
+      "loss":76.98,
+      "lossRatio":9,
+      "suspension":true
+    }
+  ],
+  "success":true
+}

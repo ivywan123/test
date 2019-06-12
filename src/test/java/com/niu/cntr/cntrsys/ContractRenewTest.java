@@ -136,7 +136,7 @@ public class ContractRenewTest {
         Response renew = trade.contracts_renew(map);
         renew.then().body("success",equalTo(true));
         renew.then().body("renewTrans.tradeDays",equalTo(day));
-        renew.then().body("renewTrans.status",equalTo(0));
+        renew.then().body("renewTrans.status",equalTo(1));
         renew.then().body("renewTrans.cost",equalTo(Float.parseFloat(renewPaid[0].toString())));
         //todo:还需判断合约是否限买，需要读写redis
     }
