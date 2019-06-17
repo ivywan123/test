@@ -1,5 +1,11 @@
 package com.niu.cntr.cntrsys;
 
+import com.niu.cntr.Service.CntrDaoImpl.brandServiceImpl;
+import com.niu.cntr.Service.CntrService.BrandService;
+import com.niu.cntr.Service.TradeDaoImpl.RoleServiceImpl;
+import com.niu.cntr.Service.TradeService.RoleService;
+import com.niu.cntr.entity.brand;
+import com.niu.cntr.entity.role;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
 import com.niu.cntr.inspect.SqlConnect;
@@ -9,9 +15,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.testng.Assert.*;
 
 //延期卖出
 //合约盈利才能展期
@@ -81,6 +87,11 @@ public class ContractRenewTest {
     @Test(groups = "smoke")
     //非盈利的合约延期报错
     public void testContracts_renew_noProfit() {
+        BrandService BrandService = new brandServiceImpl();
+        List<brand> list = BrandService.findAll();
+        RoleService roleService = new RoleServiceImpl();
+        List<role> rolelist = roleService.findAll();
+        System.out.println("success");
         SqlConnect sc = new SqlConnect();
         Long tradeId = TradeVO.getInstance().getTradeId();
         //修改合约到期时间（当日）
