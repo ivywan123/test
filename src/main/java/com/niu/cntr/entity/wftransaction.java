@@ -7,7 +7,7 @@ public class wftransaction {
     private Date endTradeDate;
     private Long accountId;
     private Long brandId;
-    private Integer tradeId; //3.0的合约编号
+    private Long tradeId; //3.0的合约编号
     private Long productId;
     private Long productDateVer;  //产品数据版本，冗余字段
 
@@ -43,11 +43,11 @@ public class wftransaction {
         this.brandId = brandId;
     }
 
-    public Integer getTradeId() {
+    public Long getTradeId() {
         return tradeId;
     }
 
-    public void setTradeId(Integer tradeId) {
+    public void setTradeId(Long tradeId) {
         this.tradeId = tradeId;
     }
 
