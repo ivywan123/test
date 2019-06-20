@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.niu.cntr.mapper.t_cntrmapper">
+
+    <resultMap type="com.niu.cntr.entity.t_cntrmapper" id="BaseResultMap" autoMapping="true">
+    </resultMap>
+
+    <update id="updateProfit">
+        update t_cntr
+        <set>
+            Cur_Bal_Amt = Cur_Bal_Amt + #{profit},
+            Cur_Aval_Cap_Amt = Cur_Aval_Cap_Amt + #{profit} ,
+            Cur_Tt_Ast_Amt = Cur_Tt_Ast_Amt + #{profit}
+        </set>
+        where Cntr_Id = #{id}
+    </update>
+
+</mapper>
