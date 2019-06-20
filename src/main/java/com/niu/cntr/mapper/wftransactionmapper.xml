@@ -8,7 +8,7 @@
     <update id="updateEndtradedate"  parameterType="com.niu.cntr.entity.wftransaction">
         update wftransaction
         <set>
-            endTradeDate = #{endTradeDate}
+            endTradeDate = CURRENT_DATE
         </set>
         where id = #{id}
     </update>

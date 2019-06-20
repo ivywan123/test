@@ -21,7 +21,7 @@ import java.lang.reflect.Proxy;
         @SuppressWarnings("unchecked")
         public static <T> T createMapper(Class<? extends Mapper> clazz, DataSourceSqlSessionFactory.DataSourceEnvironment environment) {
             SqlSessionFactory sqlSessionFactory = getSqlSessionFactory(environment);
-            SqlSession sqlSession = sqlSessionFactory.openSession();
+            SqlSession sqlSession = sqlSessionFactory.openSession(true);
             Mapper mapper = sqlSession.getMapper(clazz);
             return (T)MapperProxy.bind(mapper, sqlSession);
         }
