@@ -5,3 +5,5 @@ query:
   brandId: ""
   borrowAmount: ""
   pzMultiple: ""
+  initiDuration: ""
+  accountId: ""

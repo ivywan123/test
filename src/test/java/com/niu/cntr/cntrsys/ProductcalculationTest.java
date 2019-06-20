@@ -82,35 +82,44 @@ public class ProductcalculationTest {
         HashMap<String, Object> map = new HashMap<>();
         //用产品信息接口获取数据
         String productId = "52825118558251";
-        String brandId = "52989279149851";
-        map.put("brandId", "52989279149851");
+        map.put("brandId", CntrConfig.getInstance().brandId);
         map.put("borrowAmount", 2000);
         map.put("pzMultiple", 6);
         map.put("accountId", "53897715485425");
         map.put("productId", "52825118558251");
-        //获取产品期限选项字段cycleOptions，分别传大于最大值，小于最小值
+        //获取产品期限选项字段cycleOptions，分别传大于最大值，小于最小值，最小值
         JsonPath js = new JsonPath(product.queryone(productId, CntrConfig.getInstance().brandId).asString());
         List<String> cycleOptions = js.getList("product.cycleOptions");
         String str[] = cycleOptions.get(0).split(",");
-        List<String> cycle = Arrays.asList(str);
-        //拿到的min和max不对
+        /**拿到的min和max不对
+         List<String> cycle = Arrays.asList(str);
         String max = Collections.max(cycle);
         String min = Collections.max(cycle);
-
-        map.put("initiDuration",Integer.parseInt(max)+1);
+        **/
+        Integer a = Integer.parseInt(str[str.length-1])+1;  //仅在产品使用期限选项是升序编辑时有效
+        Integer b = Integer.parseInt(str[0])-1;
+        map.put("initiDuration",a);
         Response re=product.product_calculation(map);
-        re.then().spec(product.getResponseSpec());
+//        re.then().spec(product.getResponseSpec());  //反例不要使用
         re.then().body("success",equalTo(false));
-        re.then().body("errCode",equalTo(211));
+        re.then().body("errCode",equalTo("211"));
         re.then().body("resultMsg",equalTo("产品初始周期数无效"));
 
-        map.put("initiDuration",Integer.parseInt(min)-1);
+        map.put("initiDuration",b);
         Response re2=product.product_calculation(map);
-        re2.then().spec(product.getResponseSpec());
+        System.out.println(re2.getBody());
+//        re2.then().spec(product.getResponseSpec());  //反例不要使用
         re2.then().body("success",equalTo(false));
-        re2.then().body("errCode",equalTo(211));
+        re2.then().body("errCode",equalTo("211"));
         re2.then().body("resultMsg",equalTo("产品初始周期数无效"));
 
+        map.put("initiDuration",Integer.parseInt(str[0]));
+        Response re3=product.product_calculation(map);
+        re3.then().spec(product.getResponseSpec());
+        re3.then().body("trade.wfPercent",equalTo(2333));
+        re3.then().body("trade.wfDuration",equalTo(2));
+        re3.then().body("trade.initiDuration",equalTo(Integer.parseInt(str[0])));
+        re3.then().body("trade.statusNm",equalTo("申请中"));
 
     }
 }

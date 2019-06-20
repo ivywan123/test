@@ -1,11 +1,14 @@
 package com.niu.cntr.cntrsys;
 
 import com.niu.cntr.Service.CntrDaoImpl.brandServiceImpl;
+import com.niu.cntr.Service.CntrDaoImpl.wftransactionServiceImpl;
 import com.niu.cntr.Service.CntrService.BrandService;
+import com.niu.cntr.Service.CntrService.WftransactionService;
 import com.niu.cntr.Service.TradeDaoImpl.RoleServiceImpl;
 import com.niu.cntr.Service.TradeService.RoleService;
 import com.niu.cntr.entity.brand;
 import com.niu.cntr.entity.role;
+import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
 import com.niu.cntr.inspect.SqlConnect;
@@ -14,6 +17,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,11 +26,15 @@ import static org.hamcrest.CoreMatchers.equalTo;
 //延期卖出
 //合约盈利才能展期
 public class ContractRenewTest {
+    wftransaction wf;
     Trade trade;
     Func func = new Func();
 
     @BeforeMethod
     public void setUp() {
+        if(wf == null){
+            wf = new wftransaction();
+        }
         if(trade == null){
             trade = new Trade();
         }
@@ -34,28 +42,28 @@ public class ContractRenewTest {
         //新增一个财云免息T+1的合约
         String productId = "52825297527251";
         Response re = func.trade_new(productId,5000,10,0);
-        TradeVO.getInstance().setAccountId(re.path("trade.accountId"));
-        TradeVO.getInstance().setBrandId(re.path("trade.brandId"));
-        TradeVO.getInstance().setTradeId(re.path("trade.id"));
-        TradeVO.getInstance().setCntrId(re.path("trade.tradeId"));
-        TradeVO.getInstance().setDataVer(re.path("trade.product.datVer"));
+        wf.setAccountId(re.path("trade.accountId"));
+        wf.setBrandId(re.path("trade.brandId"));
+        wf.setId(re.path("trade.id"));
+        wf.setTradeId(re.path("trade.tradeId"));
+        wf.setProductDateVer(re.path("trade.product.datVer"));
     }
 
     @AfterMethod
     public void tearDown() {
-        func.trade_delete(TradeVO.getInstance().getTradeId(),TradeVO.getInstance().getAccountId());
+        func.trade_delete(wf.getId(),wf.getAccountId());
     }
 
     @Test(groups = "smoke")
     //不符合操作时间
     public void testContracts_renew_noTime() {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("tradeId",TradeVO.getInstance().getTradeId());
+        map.put("tradeId",wf.getId());
         map.put("day",1);
         map.put("id", Action.random());
-        map.put("brandId",TradeVO.getInstance().getBrandId());
-        map.put("accountId",TradeVO.getInstance().getAccountId());
-        map.put("datVer",TradeVO.getInstance().getDataVer());
+        map.put("brandId",wf.getBrandId());
+        map.put("accountId",wf.getAccountId());
+        map.put("datVer",wf.getProductDateVer());
         //验证延期卖出并断言
         Response renew = trade.contracts_renew(map);
         renew.then().body("success",equalTo(false));
@@ -68,14 +76,14 @@ public class ContractRenewTest {
     //已结算的合约延期报错
     public void testContracts_renew_noStatus() {
         //结算合约
-        func.trade_delete(TradeVO.getInstance().getTradeId(),TradeVO.getInstance().getAccountId());
+        func.trade_delete(wf.getId(),wf.getAccountId());
         HashMap<String, Object> map = new HashMap<>();
-        map.put("tradeId",TradeVO.getInstance().getTradeId());
+        map.put("tradeId",wf.getId());
         map.put("day",1);
         map.put("id", Action.random());
-        map.put("brandId",TradeVO.getInstance().getBrandId());
-        map.put("accountId",TradeVO.getInstance().getAccountId());
-        map.put("datVer",TradeVO.getInstance().getDataVer());
+        map.put("brandId",wf.getBrandId());
+        map.put("accountId",wf.getAccountId());
+        map.put("datVer",wf.getProductDateVer());
         //验证延期卖出并断言
         Response renew = trade.contracts_renew(map);
         renew.then().body("success",equalTo(false));
@@ -87,22 +95,33 @@ public class ContractRenewTest {
     @Test(groups = "smoke")
     //非盈利的合约延期报错
     public void testContracts_renew_noProfit() {
+        /**
         BrandService BrandService = new brandServiceImpl();
         List<brand> list = BrandService.findAll();
         RoleService roleService = new RoleServiceImpl();
         List<role> rolelist = roleService.findAll();
-        System.out.println("success");
+        **/
+        WftransactionService wftransactionService = new wftransactionServiceImpl();
+        wf.setEndTradeDate(new Date());
+        Integer result = wftransactionService.updateEndtradedate(wf);
+        if(result == 0){
+            System.out.println("更新合约信息失败");
+            return;
+        }
+        /**
         SqlConnect sc = new SqlConnect();
         Long tradeId = TradeVO.getInstance().getTradeId();
         //修改合约到期时间（当日）
         sc.update("cntrsys","update wftransaction set endTradeDate ='"+ Action.Time() +"' where id ="+tradeId+";");
+        **/
+
         HashMap<String, Object> map = new HashMap<>();
-        map.put("tradeId",tradeId);
+        map.put("tradeId",wf.getId());
         map.put("day",1);
         map.put("id", Action.random());
-        map.put("brandId",TradeVO.getInstance().getBrandId());
-        map.put("accountId",TradeVO.getInstance().getAccountId());
-        map.put("datVer",TradeVO.getInstance().getDataVer());
+        map.put("brandId",wf.getBrandId());
+        map.put("accountId",wf.getAccountId());
+        map.put("datVer",wf.getProductDateVer());
         //验证延期卖出并断言
         Response renew = trade.contracts_renew(map);
         renew.then().body("success",equalTo(false));
