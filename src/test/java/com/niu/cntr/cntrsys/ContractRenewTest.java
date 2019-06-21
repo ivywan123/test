@@ -12,7 +12,9 @@ import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
 import com.niu.cntr.inspect.SqlConnect;
+import com.niu.cntr.redisConfig.redisUtils;
 import io.restassured.response.Response;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -95,6 +97,12 @@ public class ContractRenewTest {
     @Test(groups = "smoke")
     //非盈利的合约延期报错
     public void testContracts_renew_noProfit() {
+        RedisTemplate redisTemplate= redisUtils.getRedisConnect(redisUtils.DataSourceEnvironment.cntr);
+        redisTemplate.opsForValue().set("test","11111");
+        redisTemplate.opsForValue().get("test");
+        RedisTemplate redisTemplate2= redisUtils.getRedisConnect(redisUtils.DataSourceEnvironment.trade);
+        redisTemplate2.opsForValue().set("test","22222");
+        redisTemplate2.opsForValue().get("test");
         /**
         BrandService BrandService = new brandServiceImpl();
         List<brand> list = BrandService.findAll();
