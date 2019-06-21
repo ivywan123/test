@@ -33,7 +33,7 @@ public class ContractsleverCapitalTest {
         func.trade_delete(TradeVO.getInstance().getTradeId(),TradeVO.getInstance().getAccountId());
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     //不使用可提现金，按天合约放大1000
     //todo:dataprovider
     public void testContracts_leverCapital() {

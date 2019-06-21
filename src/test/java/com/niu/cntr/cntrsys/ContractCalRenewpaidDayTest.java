@@ -39,7 +39,7 @@ public class ContractCalRenewpaidDayTest {
         func.trade_delete(TradeVO.getInstance().getTradeId(),TradeVO.getInstance().getAccountId());
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     public void testContracts_cal_renew_paidDay_noTime() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("tradeId",TradeVO.getInstance().getTradeId());
@@ -54,7 +54,7 @@ public class ContractCalRenewpaidDayTest {
 
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     public void testContracts_cal_renew_paidDay_normal() {
         HashMap<String, Object> map = new HashMap<>();
         SqlConnect sc = new SqlConnect();

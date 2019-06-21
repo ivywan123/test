@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.niu.cntr.mapper.t_cntr_posmapper">
+
+    <resultMap type="com.niu.cntr.entity.t_cntr_pos" id="BaseResultMap" autoMapping="true">
+    </resultMap>
+
+    <update id="updatePos">
+        update t_cntr_pos
+        <set>
+            Stk_Cd = #{Stk_Cd},
+            Stk_Nm = #{Stk_Nm}
+        </set>
+        where Cntr_Id = #{Cntr_Id} and Stk_Cd = #{Stk_Cd_pre}
+    </update>
+
+</mapper>

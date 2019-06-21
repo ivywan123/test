@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 public class T_cntrServiceImpl implements T_cntrService {
     @Override
-    public Integer updateProfit(BigDecimal profit, Long cntr_id) {
+    public Integer updateProfit(long profit, long cntr_id) {
         t_cntrmapper mapper = MapperFactory.createMapper(t_cntrmapper.class, DataSourceSqlSessionFactory.DataSourceEnvironment.trade);
         Integer result  = mapper.updateProfit(profit,cntr_id);
         return result;

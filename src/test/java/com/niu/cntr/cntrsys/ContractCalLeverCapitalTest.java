@@ -29,7 +29,7 @@ public class ContractCalLeverCapitalTest {
         func.trade_delete(TradeVO.getInstance().getTradeId(),TradeVO.getInstance().getAccountId());
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = {"open"})
     //按天合约放大1000
     //dataprovider
     public void testContracts_cal_leverCapital() {

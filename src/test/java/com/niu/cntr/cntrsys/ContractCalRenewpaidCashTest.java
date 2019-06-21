@@ -40,7 +40,7 @@ public class ContractCalRenewpaidCashTest {
         func.trade_delete(TradeVO.getInstance().getTradeId(),TradeVO.getInstance().getAccountId());
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     //非到期日当天 13:00前操作
     public void testContracts_cal_renew_paidCash_noTime() {
         HashMap<String, Object> map = new HashMap<>();
@@ -56,7 +56,7 @@ public class ContractCalRenewpaidCashTest {
         paidcash.then().body("resultMsg",equalTo("请在到期日当天 23:59前操作！"));
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     //可正常计算延期
     public void testContracts_cal_renew_paidCash_normal() {
         HashMap<String, Object> map = new HashMap<>();

@@ -120,7 +120,7 @@ public class Func {
     //下委托功能封装
     public Response sendOrder(Long memberId,Long tradeId,String stockCode,Integer qty){
         HashMap<String, Object> map = new HashMap<>();
-        BigDecimal price = null;
+        Float price = null;
         TradeClient tradeClient = new TradeClient();
         Response re = tradeClient.queryStockPrice(stockCode,CntrConfig.getInstance().brandId);
         price = re.path("stockPrice.sellPrice1");
@@ -133,6 +133,12 @@ public class Func {
         map.put("orderSide","B");
         map.put("orderType","H");
         return tradeClient.sendOrder(map);
+    }
+
+    //查询股票名称
+    public Response queryStkNm(String stkCd,Long brandId){
+        TradeClient tradeClient = new TradeClient();
+        return tradeClient.queryStkNm(stkCd,brandId);
     }
 
     //查询合约详情封装

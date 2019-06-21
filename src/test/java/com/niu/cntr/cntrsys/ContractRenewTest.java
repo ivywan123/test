@@ -48,7 +48,7 @@ public class ContractRenewTest {
         wf.setAccountId(re.path("trade.accountId"));
         wf.setBrandId(re.path("trade.brandId"));
         wf.setId(re.path("trade.id"));
-        wf.setTradeId(re.path("trade.tradeId"));
+        wf.setTradeId(Long.parseLong(re.path("trade.tradeId").toString()));
         wf.setProductDateVer(re.path("trade.product.datVer"));
     }
 
@@ -57,7 +57,7 @@ public class ContractRenewTest {
         func.trade_delete(wf.getId(),wf.getAccountId());
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     //不符合操作时间
     public void testContracts_renew_noTime() {
         HashMap<String, Object> map = new HashMap<>();
@@ -75,7 +75,7 @@ public class ContractRenewTest {
         renew.then().body("resultMsg",equalTo("请在到期日当天 23:59前操作！"));
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     //已结算的合约延期报错
     public void testContracts_renew_noStatus() {
         //结算合约
@@ -95,28 +95,12 @@ public class ContractRenewTest {
         renew.then().body("resultMsg",equalTo("当前合约不存在,或与合约关联的品牌有误"));
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     //非盈利的合约延期报错
     public void testContracts_renew_noProfit() {
-        /**
-        BrandService BrandService = new brandServiceImpl();
-        List<brand> list = BrandService.findAll();
-        RoleService roleService = new RoleServiceImpl();
-        List<role> rolelist = roleService.findAll();
-        **/
+        //修改合约到期时间为今天
         WftransactionService wftransactionService = new wftransactionServiceImpl();
-        wf.setEndTradeDate(new Date());
         Integer result = wftransactionService.updateEndtradedate(wf);
-        if(result == 0){
-            System.out.println("更新合约信息失败");
-            return;
-        }
-        /**
-        SqlConnect sc = new SqlConnect();
-        Long tradeId = TradeVO.getInstance().getTradeId();
-        //修改合约到期时间（当日）
-        sc.update("cntrsys","update wftransaction set endTradeDate ='"+ Action.Time() +"' where id ="+tradeId+";");
-        **/
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("tradeId",wf.getId());
@@ -133,25 +117,20 @@ public class ContractRenewTest {
         renew.then().body("resultMsg",equalTo("合约盈利情况下才能进行展期"));
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     //正常延期
     public void testContracts_renew_normal() {
 
         WftransactionService wftransactionService = new wftransactionServiceImpl();
-        wf.setEndTradeDate(new Date());
         Integer result = wftransactionService.updateEndtradedate(wf);
         if(result != 0){
             //改造合约盈利100
             T_cntrService t_cntrService = new T_cntrServiceImpl();
-            BigDecimal profit = new BigDecimal(100);
-            Long cntrId = wf.getTradeId();
+            long profit =100;
+            long cntrId = wf.getTradeId();
             t_cntrService.updateProfit(profit,cntrId);
         }
         int day=1;
-        //修改合约到期时间（当日）
-//        sc.update("cntrsys","update wftransaction set endTradeDate ='"+ Action.Time() +"' where id ="+tradeId+";");
-        //改造合约盈利100
-//        sc.update("niudb","UPDATE t_cntr SET Cur_Bal_Amt =Cur_Bal_Amt+100,Cur_Aval_Cap_Amt=Cur_Aval_Cap_Amt+100,Cur_Tt_Ast_Amt=Cur_Tt_Ast_Amt+100 WHERE Cntr_Id ="+ TradeVO.getInstance().getCntrId()+";");
         Action.sleep(30000);
         HashMap<String, Object> map = new HashMap<>();
         map.put("tradeId",wf.getId());
