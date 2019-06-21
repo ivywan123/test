@@ -5,7 +5,9 @@ import com.niu.cntr.Service.CntrDaoImpl.wftransactionServiceImpl;
 import com.niu.cntr.Service.CntrService.BrandService;
 import com.niu.cntr.Service.CntrService.WftransactionService;
 import com.niu.cntr.Service.TradeDaoImpl.RoleServiceImpl;
+import com.niu.cntr.Service.TradeDaoImpl.T_cntrServiceImpl;
 import com.niu.cntr.Service.TradeService.RoleService;
+import com.niu.cntr.Service.TradeService.T_cntrService;
 import com.niu.cntr.entity.brand;
 import com.niu.cntr.entity.role;
 import com.niu.cntr.entity.wftransaction;
@@ -19,6 +21,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +50,7 @@ public class ContractRenewTest {
         wf.setAccountId(re.path("trade.accountId"));
         wf.setBrandId(re.path("trade.brandId"));
         wf.setId(re.path("trade.id"));
-        wf.setTradeId(re.path("trade.tradeId"));
+        wf.setTradeId(Long.parseLong(re.path("trade.tradeId").toString()));
         wf.setProductDateVer(re.path("trade.product.datVer"));
     }
 
@@ -110,18 +113,7 @@ public class ContractRenewTest {
         List<role> rolelist = roleService.findAll();
         **/
         WftransactionService wftransactionService = new wftransactionServiceImpl();
-        wf.setEndTradeDate(new Date());
         Integer result = wftransactionService.updateEndtradedate(wf);
-        if(result == 0){
-            System.out.println("更新合约信息失败");
-            return;
-        }
-        /**
-        SqlConnect sc = new SqlConnect();
-        Long tradeId = TradeVO.getInstance().getTradeId();
-        //修改合约到期时间（当日）
-        sc.update("cntrsys","update wftransaction set endTradeDate ='"+ Action.Time() +"' where id ="+tradeId+";");
-        **/
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("tradeId",wf.getId());
@@ -141,23 +133,27 @@ public class ContractRenewTest {
     @Test(groups = "smoke")
     //正常延期
     public void testContracts_renew_normal() {
-        SqlConnect sc = new SqlConnect();
-        Long tradeId = TradeVO.getInstance().getTradeId();
+
+        WftransactionService wftransactionService = new wftransactionServiceImpl();
+        Integer result = wftransactionService.updateEndtradedate(wf);
+        if(result != 0){
+            //改造合约盈利100
+            T_cntrService t_cntrService = new T_cntrServiceImpl();
+            long profit = 100;
+            Long cntrId = wf.getTradeId();
+            t_cntrService.updateProfit(profit,cntrId);
+        }
         int day=1;
-        //修改合约到期时间（当日）
-        sc.update("cntrsys","update wftransaction set endTradeDate ='"+ Action.Time() +"' where id ="+tradeId+";");
-        //改造合约盈利100
-        sc.update("niudb","UPDATE t_cntr SET Cur_Bal_Amt =Cur_Bal_Amt+100,Cur_Aval_Cap_Amt=Cur_Aval_Cap_Amt+100,Cur_Tt_Ast_Amt=Cur_Tt_Ast_Amt+100 WHERE Cntr_Id ="+ TradeVO.getInstance().getCntrId()+";");
         Action.sleep(30000);
         HashMap<String, Object> map = new HashMap<>();
-        map.put("tradeId",tradeId);
+        map.put("tradeId",wf.getId());
         map.put("day",day);
         map.put("id", Action.random());
-        map.put("brandId",TradeVO.getInstance().getBrandId());
-        map.put("accountId",TradeVO.getInstance().getAccountId());
-        map.put("datVer",TradeVO.getInstance().getDataVer());
+        map.put("brandId",wf.getBrandId());
+        map.put("accountId",wf.getAccountId());
+        map.put("datVer",wf.getProductDateVer());
         //查询合约详情 借款金额，产品有偿续约公式  为断言准备数据
-        Response tradeRe = func.queryTrade(TradeVO.getInstance().getBrandId(),TradeVO.getInstance().getAccountId(),tradeId);
+        Response tradeRe = func.queryTrade(wf.getBrandId(),wf.getAccountId(),wf.getId());
         Float borrowAmount =tradeRe.path("trade.borrowAmount");
         String paidRenewCost = tradeRe.path("trade.product.paidRenewCost");
         Float pzMultiple = tradeRe.path("trade.pzMultiple");

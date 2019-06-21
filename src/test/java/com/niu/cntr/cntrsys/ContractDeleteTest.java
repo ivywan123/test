@@ -17,6 +17,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.testng.Assert.*;
 
 //终止合约
+//1、正常终止
+//2、分润的终止，补偿收入
+//3、
 public class ContractDeleteTest {
     Trade trade;
     String random=String.valueOf(System.currentTimeMillis());

@@ -15,10 +15,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.testng.Assert.*;
@@ -26,10 +24,10 @@ import static org.testng.Assert.*;
 //停牌转合约
 //停牌股考虑是否放在config文件中 1个或多个
 //1、合约无停牌股
-//2、合约有通排骨和非停牌股，传入全部停牌股
-//3、合约有多支停牌股，传入部分停牌股
-//4、合约有多支停牌股，传入全部停牌股（normal） 原合约终止
-//5、合约有多支停牌股，传入全部停牌股（normal） 原合约保留
+//2、合约有停牌股和非停牌股，传入停牌股
+//3、合约只有多支停牌股，传入部分停牌股
+//4、合约只有多支停牌股，传入全部停牌股（normal） 原合约终止
+//5、合约只有多支停牌股，传入全部停牌股（normal） 原合约保留
 
 public class ContractConvertTest {
     Trade trade;
@@ -58,6 +56,49 @@ public class ContractConvertTest {
     @AfterMethod
     public void tearDown() {
 
+    }
+
+    //1、合约无停牌股
+    @Test(groups = "open")
+    public void testContracts_convert_nostk(){
+        Product product = new Product();
+        HashMap<String, Object> map = new HashMap<>();
+        //买入一只股票
+        String stk_cd1 ="000001";
+        Integer qty = 200;
+        Response re =func.sendOrder(wf.getAccountId(),wf.getId(),stk_cd1,qty);
+        //盘后生成的合约，不能马上买入
+        if(re.path("status").equals("false")){
+            return;
+        }
+        //等待
+        Action.sleep(2000);
+        //准备停牌产品信息 datVer productId  pzMultiple
+        String new_productid = "52894567092551";  //停牌杠杆产品
+        JsonPath js = new JsonPath(product.queryone(new_productid, wf.getBrandId()).asString());
+        List<Long> datavers = js.getList("product.datVer");
+        String dataver = String.valueOf(datavers.get(0));
+        List<String> multipleOptions = js.getList("product.multipleOptions");
+        String multiple = multipleOptions.get(0).split(",")[0];
+        map.put("accountId",wf.getAccountId());
+        map.put("brandId",wf.getBrandId());
+        map.put("datVer",dataver);
+        map.put("id",Action.random());
+        map.put("productId",new_productid);
+        map.put("pzMultiple",multiple);
+        map.put("stocks","000001");
+        map.put("tradeId",wf.getId());
+        try {
+            Response cn = trade.contracts_convert(map);
+            cn.then().body("success", equalTo(false));
+            cn.then().body("errCode", equalTo(500435));
+            cn.then().body("status", equalTo("false"));
+            cn.then().body("resultMsg", equalTo("所传股票并非全部停牌"));
+            //检验原合约是否终止
+            trade.contracts_queryContractDetail(wf.getBrandId(),wf.getAccountId(),wf.getId()).then().body("status",equalTo(3));
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     //4、合约有多支停牌股，传入全部停牌股（normal） 原合约终止
