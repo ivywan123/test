@@ -77,7 +77,7 @@ public class ContractRenewTest {
         renew.then().body("resultMsg",equalTo("请在到期日当天 23:59前操作！"));
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     //已结算的合约延期报错
     public void testContracts_renew_noStatus() {
         //结算合约
