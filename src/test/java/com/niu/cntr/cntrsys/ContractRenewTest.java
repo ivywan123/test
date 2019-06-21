@@ -59,7 +59,7 @@ public class ContractRenewTest {
         func.trade_delete(wf.getId(),wf.getAccountId());
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     //不符合操作时间
     public void testContracts_renew_noTime() {
         HashMap<String, Object> map = new HashMap<>();
@@ -97,7 +97,7 @@ public class ContractRenewTest {
         renew.then().body("resultMsg",equalTo("当前合约不存在,或与合约关联的品牌有误"));
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     //非盈利的合约延期报错
     public void testContracts_renew_noProfit() {
         RedisTemplate redisTemplate= redisUtils.getRedisConnect(redisUtils.DataSourceEnvironment.cntr);
@@ -130,7 +130,7 @@ public class ContractRenewTest {
         renew.then().body("resultMsg",equalTo("合约盈利情况下才能进行展期"));
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     //正常延期
     public void testContracts_renew_normal() {
 
