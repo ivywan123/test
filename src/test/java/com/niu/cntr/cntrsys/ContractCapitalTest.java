@@ -31,7 +31,7 @@ public class ContractCapitalTest {
         func.trade_delete(TradeVO.getInstance().getTradeId(),TradeVO.getInstance().getAccountId());
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     //按天合约追加非杠杆100.23
     public void testContracts_capital() {
         //新增合约

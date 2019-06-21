@@ -30,7 +30,7 @@ public class ContractQueryDetailTest {
     public void tearDown() {
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     public void testContracts_queryContractDetail() {
         //新增合约
         HashMap<String, Object> map = new HashMap<>();

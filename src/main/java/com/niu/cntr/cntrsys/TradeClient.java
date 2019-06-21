@@ -25,4 +25,12 @@ public class TradeClient extends Contact{
     public Response sendOrder(HashMap<String, Object> map){
         return getResponseFromYaml("/CntrApi/sendOrder.yaml",map);
     }
+
+    //根据股票名称查询股票价格
+    public Response queryStkNm(String stkCd,Long brandId){
+        HashMap<String,Object> map=new HashMap<>();
+        map.put("stkCd",stkCd);
+        map.put("brandId",brandId);
+        return getResponseFromYaml("/CntrApi/queryStkNm.yaml",map);
+    }
 }

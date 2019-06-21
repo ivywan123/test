@@ -39,7 +39,7 @@ public class ContractCreateTest {
     }
 
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     //新增按天合约
     //todo：dataprovider
     public void testContract_create() {

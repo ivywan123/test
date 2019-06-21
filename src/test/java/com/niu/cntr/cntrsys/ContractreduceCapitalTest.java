@@ -31,7 +31,7 @@ public class ContractreduceCapitalTest {
         func.trade_delete(TradeVO.getInstance().getTradeId(),TradeVO.getInstance().getAccountId());
     }
 
-    @Test(groups = "smoke")
+    @Test(groups = "open")
     //按天合约缩小500
     public void testContracts_reduceCapital() {
         //新增合约

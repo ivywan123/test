@@ -35,7 +35,7 @@ public class ProductcalculationTest {
     }
 
 
-    @Test
+    @Test(groups = "open")
     //1、不带初始周期和用户账户，预计算一个财云按天合约，2000,6倍
     public void product_calculation() {
         HashMap<String,Object> map = new HashMap<>();
@@ -57,7 +57,7 @@ public class ProductcalculationTest {
 
     //2、带accountid的调用，用json Schema Validation 验证必要字段是否存在 product_calculation_schema.json
 //    get("https://server/demo?p1=0&p2=1").then().assertThat().body(matchesJsonSchemaInClasspath("test.json"));
-    @Test
+    @Test(groups = "open")
     public void product_calculation_accountid(){
         HashMap<String,Object> map = new HashMap<>();
         //用产品信息接口获取数据
@@ -77,7 +77,7 @@ public class ProductcalculationTest {
     }
 
     //3、验证初始周期数参数，传的话，判断是否在产品列表范围中，不在报错；在的话用传的参数
-    @Test
+    @Test(groups = "open")
     public void product_calculation_initiDuration() {
         HashMap<String, Object> map = new HashMap<>();
         //用产品信息接口获取数据
