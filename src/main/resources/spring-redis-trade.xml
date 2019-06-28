@@ -11,7 +11,7 @@
     <!--配置JedisConnectionFactory-->
     <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
         <property name="hostName" value="192.168.1.70"/>
-        <property name="port" value="6381"/>
+        <property name="port" value="6382"/>
         <property name="poolConfig" ref="poolConfig"/>
     </bean>
     <!--使用字符串进行序列化-->

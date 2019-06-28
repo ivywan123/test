@@ -17,6 +17,7 @@ import com.niu.cntr.inspect.SqlConnect;
 import com.niu.cntr.redisConfig.redisUtils;
 import io.restassured.response.Response;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -133,7 +134,6 @@ public class ContractRenewTest {
     @Test(groups = "open")
     //正常延期
     public void testContracts_renew_normal() {
-
         WftransactionService wftransactionService = new wftransactionServiceImpl();
         Integer result = wftransactionService.updateEndtradedate(wf);
         if(result != 0){
@@ -173,5 +173,8 @@ public class ContractRenewTest {
         renew.then().body("renewTrans.status",equalTo(1));
         renew.then().body("renewTrans.cost",equalTo(Float.parseFloat(renewPaid[0].toString())));
         //todo:还需判断合约是否限买，需要读写redis
+        RedisTemplate redisTemplate= redisUtils.getRedisConnect(redisUtils.DataSourceEnvironment.cntr);
+        boolean limit = redisTemplate.opsForHash().hasKey("contract:forbidden:buy",wf.getId());  //判断哈希key是否存在
+        Assert.assertEquals(limit,"true");  //判断合约是否限买
     }
 }
