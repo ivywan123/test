@@ -1,6 +1,7 @@
 package com.niu.cntr.cntrsys;
 
 import com.niu.cntr.CntrConfig;
+import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
 import io.restassured.response.Response;
@@ -18,17 +19,28 @@ import static org.testng.Assert.*;
 public class ContractreduceCapitalTest {
     Trade trade;
     Func func = new Func();
+    wftransaction wf;
 
     @BeforeMethod
     public void setUp() {
         if(trade==null){
             trade=new Trade();
         }
+        if(wf == null){
+            wf = new wftransaction();
+        }
+        String productId = "52825118558251";
+        Response re = func.trade_new(productId,5000,10,0);
+        wf.setAccountId(re.path("trade.accountId"));
+        wf.setBrandId(re.path("trade.brandId"));
+        wf.setId(re.path("trade.id"));
+        wf.setTradeId(Long.parseLong(re.path("trade.tradeId").toString()));
+        wf.setProductDateVer(re.path("trade.product.datVer"));
     }
 
     @AfterMethod
     public void tearDown() {
-        func.trade_delete(TradeVO.getInstance().getTradeId(),TradeVO.getInstance().getAccountId());
+        func.trade_delete(wf.getId(),wf.getAccountId());
     }
 
     @Test(groups = "open")
@@ -36,27 +48,21 @@ public class ContractreduceCapitalTest {
     public void testContracts_reduceCapital() {
         //新增合约
         HashMap<String, Object> map = new HashMap<>();
-        String productId = "52825118558251";
-        Response re = func.trade_new(productId,5000,10,0);
-        //获取合约信息tradeId,capitalAmount,brandId,flag,accountId
-        Long tradeId = re.path("trade.id");
-        Long accountId = re.path("trade.accountId");
-        Long dataver = re.path("trade.product.datVer");
-        TradeVO.getInstance().setTradeId(tradeId);
-        TradeVO.getInstance().setAccountId(accountId);
         float reduceAmount = 500;   //缩小500
-        map.put("tradeId",tradeId);
-        map.put("accountId",accountId);
+        map.put("tradeId",wf.getId());
+        map.put("accountId",wf.getAccountId());
         map.put("borrowAmount",reduceAmount); //缩小500
-        map.put("datVer",dataver);
+        map.put("datVer",wf.getProductDateVer());
         map.put("id", Action.random());
         map.put("brandId", CntrConfig.getInstance().brandId);
 
         //为断言做数据准备
+        //获取合约详情
+        Response tradeRe = func.queryTrade(wf.getBrandId(),wf.getAccountId(),wf.getId());
         //合约借款 合约杠杆
-        Integer pzMultiple = re.path("trade.pzMultiple");
-        Integer borrowAmount = re.path("trade.borrowAmount");
-        Integer leverCapitalAmount =  re.path("trade.leverCapitalAmount");
+        Integer pzMultiple = tradeRe.path("trade.pzMultiple");
+        Integer borrowAmount = tradeRe.path("trade.borrowAmount");
+        Integer leverCapitalAmount =  tradeRe.path("trade.leverCapitalAmount");
         float after_borrowAmount = borrowAmount - reduceAmount;
         Double after_lever = leverCapitalAmount - Math.ceil(reduceAmount/pzMultiple);
         Double after_unlever = leverCapitalAmount - after_lever;

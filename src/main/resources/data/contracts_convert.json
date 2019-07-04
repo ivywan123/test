@@ -6,6 +6,6 @@
   "id": 5018060700263,
   "productId": 52894567092551,
   "pzMultiple": 1,
-  "retain": false,
+  "retain": true,
   "stocks":"300178"
 }

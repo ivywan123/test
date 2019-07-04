@@ -11,8 +11,10 @@ import com.niu.cntr.inspect.SqlConnect;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.omg.CORBA.INVALID_TRANSACTION;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
@@ -23,11 +25,11 @@ import static org.testng.Assert.*;
 
 //停牌转合约
 //停牌股考虑是否放在config文件中 1个或多个
-//1、合约无停牌股
+//1、合约无停牌股，原合约保留
 //2、合约有停牌股和非停牌股，传入停牌股
 //3、合约只有多支停牌股，传入部分停牌股
-//4、合约只有多支停牌股，传入全部停牌股（normal） 原合约终止
-//5、合约只有多支停牌股，传入全部停牌股（normal） 原合约保留
+//4、合约只有多支停牌股，传入全部停牌股（normal） 原合约终止 true
+//5、合约只有多支停牌股，传入全部停牌股（normal） 原合约保留 false
 
 public class ContractConvertTest {
     Trade trade;
@@ -94,17 +96,23 @@ public class ContractConvertTest {
             cn.then().body("errCode", equalTo(500435));
             cn.then().body("status", equalTo("false"));
             cn.then().body("resultMsg", equalTo("所传股票并非全部停牌"));
-            //检验原合约是否终止
-            trade.contracts_queryContractDetail(wf.getBrandId(),wf.getAccountId(),wf.getId()).then().body("status",equalTo(3));
+            //未执行停牌转合约，原合约不终止
+            trade.contracts_queryContractDetail(wf.getBrandId(),wf.getAccountId(),wf.getId()).then().body("status",equalTo(1));
         }catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    //4、合约有多支停牌股，传入全部停牌股（normal） 原合约终止
+    @DataProvider(name = "retain")
+    public Object[][] retain(){
+        return new Object[][]{{"false"}
+                ,{"true"}};
+    }
+
+    //4、合约有多支停牌股，传入全部停牌股（normal） 原合约终止和保留
     //盘中
-    @Test(groups = "open")
-    public void testContracts_convert() {
+    @Test(groups = "open",dataProvider = "retain")
+    public void testContracts_convert(boolean retain) {
         Product product = new Product();
         HashMap<String, Object> map = new HashMap<>();
         //买入两只股票
@@ -134,9 +142,6 @@ public class ContractConvertTest {
             }
             Stkstr = str[0]+","+str[1];
         }
-        //获取合约停牌股
-
-        //停牌转合约 原合约终止
         //准备停牌产品信息 datVer productId  pzMultiple
         String new_productid = "52894567092551";  //停牌杠杆产品
         JsonPath js = new JsonPath(product.queryone(new_productid, wf.getBrandId()).asString());
@@ -152,6 +157,7 @@ public class ContractConvertTest {
         map.put("pzMultiple",multiple);
         map.put("stocks",Stkstr);
         map.put("tradeId",wf.getId());
+        map.put("retain",retain);  //从dataprovider获取的参数
         try {
             Response cn = trade.contracts_convert(map);
             cn.then().body("converTrade.tradeId", equalTo(wf.getId()));
@@ -159,8 +165,14 @@ public class ContractConvertTest {
             cn.then().body("converTrade.oldEnd", equalTo(false));
             cn.then().body("converTrade.newTrade.status", equalTo(1));
             cn.then().body("success", equalTo(true));
-            //检验原合约是否终止
-            trade.contracts_queryContractDetail(wf.getBrandId(),wf.getAccountId(),wf.getId()).then().body("status",equalTo(3));
+            boolean status = trade.contracts_queryContractDetail(wf.getBrandId(), wf.getAccountId(), wf.getId()).then().extract().path("status");
+            if(retain == false) {
+                //检验原合约是否保留
+                Assert.assertEquals(status,1);
+            }else {
+                //检验原合约是否终止
+                Assert.assertEquals(status,3);
+            }
         }catch (Exception e) {
             e.printStackTrace();
         }

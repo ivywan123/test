@@ -82,7 +82,7 @@ public class ContractCapitalTest {
     }
 
     @Test(groups = "open")
-    //按天合约追加非杠杆100.23
+    //按天合约追加非杠杆0.23
     public void testContracts_capital_no() {
         //新增合约
         HashMap<String, Object> map = new HashMap<>();

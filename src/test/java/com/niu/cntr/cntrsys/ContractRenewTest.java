@@ -101,18 +101,6 @@ public class ContractRenewTest {
     @Test(groups = "open")
     //非盈利的合约延期报错
     public void testContracts_renew_noProfit() {
-        RedisTemplate redisTemplate= redisUtils.getRedisConnect(redisUtils.DataSourceEnvironment.cntr);
-        redisTemplate.opsForValue().set("test","11111");
-        redisTemplate.opsForValue().get("test");
-        RedisTemplate redisTemplate2= redisUtils.getRedisConnect(redisUtils.DataSourceEnvironment.trade);
-        redisTemplate2.opsForValue().set("test","22222");
-        redisTemplate2.opsForValue().get("test");
-        /**
-        BrandService BrandService = new brandServiceImpl();
-        List<brand> list = BrandService.findAll();
-        RoleService roleService = new RoleServiceImpl();
-        List<role> rolelist = roleService.findAll();
-        **/
         WftransactionService wftransactionService = new wftransactionServiceImpl();
         Integer result = wftransactionService.updateEndtradedate(wf);
 
@@ -172,7 +160,7 @@ public class ContractRenewTest {
         renew.then().body("renewTrans.tradeDays",equalTo(day));
         renew.then().body("renewTrans.status",equalTo(1));
         renew.then().body("renewTrans.cost",equalTo(Float.parseFloat(renewPaid[0].toString())));
-        //todo:还需判断合约是否限买，需要读写redis
+        //判断合约是否限买，需要读写redis
         RedisTemplate redisTemplate= redisUtils.getRedisConnect(redisUtils.DataSourceEnvironment.cntr);
         boolean limit = redisTemplate.opsForHash().hasKey("contract:forbidden:buy",wf.getId());  //判断哈希key是否存在
         Assert.assertEquals(limit,"true");  //判断合约是否限买
