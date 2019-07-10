@@ -1,16 +1,13 @@
 package com.niu.cntr.cntrsys;
 
-import com.niu.cntr.Cntr;
 import com.niu.cntr.CntrConfig;
 import com.niu.cntr.Service.TradeDaoImpl.T_cntr_posServiceImpl;
 import com.niu.cntr.Service.TradeService.T_cntr_posService;
 import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
-import com.niu.cntr.inspect.SqlConnect;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import org.omg.CORBA.INVALID_TRANSACTION;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -21,15 +18,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.testng.Assert.*;
 
 //停牌转合约
 //停牌股考虑是否放在config文件中 1个或多个
 //1、合约无停牌股，原合约保留
 //2、合约有停牌股和非停牌股，传入停牌股
 //3、合约只有多支停牌股，传入部分停牌股
-//4、合约只有多支停牌股，传入全部停牌股（normal） 原合约终止 true
-//5、合约只有多支停牌股，传入全部停牌股（normal） 原合约保留 false
+//4、合约只有多支停牌股，传入全部停牌股（normal） 原合约终止和保留 true
 
 public class ContractConvertTest {
     Trade trade;

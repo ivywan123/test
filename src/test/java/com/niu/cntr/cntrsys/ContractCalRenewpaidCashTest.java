@@ -1,5 +1,8 @@
 package com.niu.cntr.cntrsys;
 
+import com.niu.cntr.Service.CntrDaoImpl.wftransactionServiceImpl;
+import com.niu.cntr.Service.CntrService.WftransactionService;
+import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
 import com.niu.cntr.inspect.SqlConnect;
@@ -19,35 +22,40 @@ import static org.hamcrest.CoreMatchers.is;
 public class ContractCalRenewpaidCashTest {
     Trade trade;
     Func func = new Func();
+    wftransaction wf;
 
     @BeforeMethod
     public void setUp() {
         if(trade == null){
             trade = new Trade();
         }
+        if(wf == null){
+            wf = new wftransaction();
+        }
         //准备待测合约
         //新增一个财云免息T+1的合约
         String productId = "52825297527251";
         Response re = func.trade_new(productId,5000,10,0);
-        TradeVO.getInstance().setAccountId(re.path("trade.accountId"));
-        TradeVO.getInstance().setBrandId(re.path("trade.brandId"));
-        TradeVO.getInstance().setTradeId(re.path("trade.id"));
-        TradeVO.getInstance().setCntrId(re.path("trade.tradeId"));
+        wf.setAccountId(re.path("trade.accountId"));
+        wf.setBrandId(re.path("trade.brandId"));
+        wf.setId(re.path("trade.id"));
+        wf.setTradeId(re.path("trade.tradeId"));
+        wf.setProductDateVer(re.path("trade.product.datVer"));
     }
 
     @AfterMethod
     public void tearDown() {
-        func.trade_delete(TradeVO.getInstance().getTradeId(),TradeVO.getInstance().getAccountId());
+        func.trade_delete(wf.getId(), wf.getAccountId());
     }
 
     @Test(groups = "open")
     //非到期日当天 13:00前操作
     public void testContracts_cal_renew_paidCash_noTime() {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("tradeId",TradeVO.getInstance().getTradeId());
+        map.put("tradeId",wf.getId());
         map.put("day",2);
-        map.put("brandId",TradeVO.getInstance().getBrandId());
-        map.put("accountId",TradeVO.getInstance().getAccountId());
+        map.put("brandId",wf.getBrandId());
+        map.put("accountId",wf.getAccountId());
         //验证预计算并断言
         Response paidcash = trade.contracts_cal_renew_paidCash(map);
         paidcash.then().body("success",equalTo(false));
@@ -61,20 +69,21 @@ public class ContractCalRenewpaidCashTest {
     public void testContracts_cal_renew_paidCash_normal() {
         HashMap<String, Object> map = new HashMap<>();
         SqlConnect sc = new SqlConnect();
-        Long tradeId = TradeVO.getInstance().getTradeId();
-//        Integer cntrId = TradeVO.getInstance().getCntrId();
+        Long tradeId = wf.getTradeId();
         int day=2;
         //修改合约到期时间（当日）
-        sc.update("cntrsys","update wftransaction set endTradeDate ='"+ Action.Time() +"' where id ="+tradeId+";");
+        WftransactionService wftransactionService = new wftransactionServiceImpl();
+        Integer result = wftransactionService.updateEndtradedate(wf);
+
         map.put("tradeId",tradeId);
         map.put("day",day);
-        map.put("brandId",TradeVO.getInstance().getBrandId());
-        map.put("accountId",TradeVO.getInstance().getAccountId());
+        map.put("brandId",wf.getBrandId());
+        map.put("accountId",wf.getAccountId());
         //查询合约详情 借款金额，产品有偿续约公式  为断言准备数据
-        Response tradeRe = func.queryTrade(TradeVO.getInstance().getBrandId(),TradeVO.getInstance().getAccountId(),tradeId);
+        Response tradeRe = func.queryTrade(wf.getBrandId(),wf.getAccountId(),tradeId);
         Float borrowAmount =tradeRe.path("trade.borrowAmount");
         String paidRenewCost = tradeRe.path("trade.product.paidRenewCost");
-        Long datVer = tradeRe.path("trade.product.datVer");
+        Long datVer = wf.getProductDateVer();
         Float pzMultiple = tradeRe.path("trade.pzMultiple");
         //获取倍率相应的有偿续约倍率
         Double[] renewPaid = {null};

@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="CntrsysTest" preserve-order="true">
+    <listeners>
+        <listener class-name="com.niu.cntr.TezitongAll.TestngListener"></listener>
+        <listener class-name="com.niu.cntr.TezitongAll.RetryListener"></listener>
+    </listeners>
     <test name="allTestsInAPackage">
+        <groups>
+            <run>
+                <include name="open" />
+                <exclude name="close" />
+            </run>
+        </groups>
+
         <packages>
             <package name="com.niu.cntr.*"/>
         </packages>

@@ -1,6 +1,5 @@
 package com.niu.cntr.cntrsys;
 
-import com.niu.cntr.CntrConfig;
 import com.niu.cntr.Service.TradeDaoImpl.T_cntrServiceImpl;
 import com.niu.cntr.Service.TradeService.T_cntrService;
 import com.niu.cntr.entity.wftransaction;
@@ -17,7 +16,6 @@ import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.testng.Assert.*;
 
 //放大合约测试用例
 //1、资金池不满足
@@ -35,25 +33,6 @@ public class ContractleverCapitalTest {
     Trade trade;
     Func func = new Func();
     wftransaction wf;
-
-    //Object转换成BigDecimal
-    public static BigDecimal getBigDecimal( Object value ) {
-        BigDecimal ret = null;
-        if( value != null ) {
-            if( value instanceof BigDecimal ) {
-                ret = (BigDecimal) value;
-            } else if( value instanceof String ) {
-                ret = new BigDecimal( (String) value );
-            } else if( value instanceof BigInteger ) {
-                ret = new BigDecimal( (BigInteger) value );
-            } else if( value instanceof Number ) {
-                ret = new BigDecimal( ((Number)value).doubleValue() );
-            } else {
-                throw new ClassCastException("Not possible to coerce ["+value+"] from class "+value.getClass()+" into a BigDecimal.");
-            }
-        }
-        return ret;
-    }
 
     @BeforeMethod
     public void setUp() {
@@ -104,7 +83,7 @@ public class ContractleverCapitalTest {
         map.put("flag",false);  //不使用可提现金
         map.put("datVer",wf.getProductDateVer());
         map.put("id", Action.random());
-        map.put("brandId", CntrConfig.getInstance().brandId);
+        map.put("brandId", wf.getBrandId());
         redisTemplate.opsForHash().increment("capital",fundPoolId,catital);
         try {
             Response lever = trade.contracts_leverCapital(map);
@@ -128,7 +107,7 @@ public class ContractleverCapitalTest {
         map.put("flag",false);  //不使用可提现金
         map.put("datVer",wf.getProductDateVer());
         map.put("id", Action.random());
-        map.put("brandId", CntrConfig.getInstance().brandId);
+        map.put("brandId", wf.getBrandId());
         Response lever = trade.contracts_leverCapital(map);
         lever.then().body("success", equalTo(false));
     }
@@ -144,7 +123,7 @@ public class ContractleverCapitalTest {
         map.put("flag",false);  //不使用可提现金
         map.put("datVer",wf.getProductDateVer());
         map.put("id", Action.random());
-        map.put("brandId", CntrConfig.getInstance().brandId);
+        map.put("brandId", wf.getBrandId());
         Response lever = trade.contracts_leverCapital(map);
         lever.then().body("success", equalTo(false));
         map.put("capitalAmount",6000000f);  //放大6000000
@@ -163,7 +142,7 @@ public class ContractleverCapitalTest {
         map.put("flag",false);  //不使用可提现金
         map.put("datVer",wf.getProductDateVer());
         map.put("id", Action.random());
-        map.put("brandId", CntrConfig.getInstance().brandId);
+        map.put("brandId", wf.getBrandId());
         Response lever = trade.contracts_leverCapital(map);
         lever.then().body("success", equalTo(false));
     }
@@ -174,26 +153,26 @@ public class ContractleverCapitalTest {
     public void testContracts_leverCapital() {
         //新增合约
         HashMap<String, Object> map = new HashMap<>();
-        float capitalAmount = 1000f;   //放大1000
+        BigDecimal capitalAmount = new BigDecimal(1000);   //放大1000
         map.put("tradeId",wf.getId());
         map.put("accountId",wf.getAccountId());
         map.put("capitalAmount",capitalAmount); //放大1000
         map.put("flag",false);  //不使用可提现金
         map.put("datVer",wf.getProductDateVer());
         map.put("id", Action.random());
-        map.put("brandId", CntrConfig.getInstance().brandId);
+        map.put("brandId", wf.getBrandId());
         //为断言做数据准备
         //获取合约详情
         Response tradeRe = func.queryTrade(wf.getBrandId(),wf.getAccountId(),wf.getId());
         //合约借款 合约杠杆
-        Integer pzMultiple = tradeRe.path("trade.pzMultiple");
-        Integer borrowAmount = tradeRe.path("trade.borrowAmount");
-        Double money = capitalAmount + Math.ceil(capitalAmount/pzMultiple);
-        float after_borrowAmount = borrowAmount + capitalAmount;
+        BigDecimal pzMultiple = tradeRe.path("trade.pzMultiple");
+        BigDecimal borrowAmount = tradeRe.path("trade.borrowAmount");
+        BigDecimal money = capitalAmount.add(capitalAmount.divide(pzMultiple,0,BigDecimal.ROUND_HALF_UP));
+        BigDecimal after_borrowAmount = borrowAmount.add(capitalAmount);
         //验证放大并断言
         Response lever = trade.contracts_leverCapital(map);
         lever.then().body("success", equalTo(true));
-        lever.then().body("capitalOrder.money", equalTo(Float.parseFloat(money.toString())));
+        lever.then().body("capitalOrder.money", equalTo(money));
         lever.then().body("capitalOrder.orderType", equalTo(11003));
         lever.then().body("capitalOrder.afterTrade.borrowAmount", is(after_borrowAmount));
 
@@ -220,7 +199,7 @@ public class ContractleverCapitalTest {
         map.put("flag",true);  //使用可提现金
         map.put("datVer",wf.getProductDateVer());
         map.put("id", Action.random());
-        map.put("brandId", CntrConfig.getInstance().brandId);
+        map.put("brandId", wf.getBrandId());
         //验证放大并断言
         Response lever = trade.contracts_leverCapital(map);
         lever.then().body("success", equalTo(true));
@@ -229,4 +208,7 @@ public class ContractleverCapitalTest {
         lever.then().body("capitalOrder.orderType", equalTo(11003));
         lever.then().body("capitalOrder.status", equalTo(1));
     }
+
+    //8、补亏的放大  总资产-借款-杠杆<0
+    //
 }

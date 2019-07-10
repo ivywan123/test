@@ -45,7 +45,7 @@ public class ContractCapitalTest {
 
     @AfterMethod
     public void tearDown() {
-        func.trade_delete(TradeVO.getInstance().getTradeId(),TradeVO.getInstance().getAccountId());
+        func.trade_delete(wf.getId(), wf.getAccountId());
     }
 
     @Test(groups = "open")
