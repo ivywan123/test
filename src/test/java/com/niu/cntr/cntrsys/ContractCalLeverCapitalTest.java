@@ -7,6 +7,8 @@ import io.restassured.response.Response;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -29,11 +31,15 @@ public class ContractCalLeverCapitalTest {
         }
         String productId = "52825118558251";
         Response re = func.trade_new(productId,5000,10,0);
-        wf.setAccountId(re.path("trade.accountId"));
-        wf.setBrandId(re.path("trade.brandId"));
-        wf.setId(re.path("trade.id"));
-        wf.setTradeId(Long.parseLong(re.path("trade.tradeId").toString()));
-        wf.setProductDateVer(re.path("trade.product.datVer"));
+        if(re != null){
+            wf.setAccountId(re.path("trade.accountId"));
+            wf.setBrandId(re.path("trade.brandId"));
+            wf.setId(re.path("trade.id"));
+            wf.setTradeId(Long.parseLong(re.path("trade.tradeId").toString()));
+            wf.setProductDateVer(re.path("trade.product.datVer"));
+        }else {
+            return;
+        }
     }
 
     @AfterMethod
@@ -52,7 +58,7 @@ public class ContractCalLeverCapitalTest {
         Long accountId = wf.getAccountId();
         wf.setId(tradeId);
         wf.setAccountId(accountId);
-        float capitalAmount = 1000;   //放大1000
+        BigDecimal capitalAmount = new BigDecimal(1000);   //放大1000
         map.put("tradeId",tradeId);
         map.put("accountId",accountId);
         map.put("capitalAmount",capitalAmount);
@@ -61,16 +67,16 @@ public class ContractCalLeverCapitalTest {
         //为断言做数据准备
         //获取合约详情
         Response tradeRe = func.queryTrade(wf.getBrandId(),wf.getAccountId(),wf.getId());
-        Integer pzMultiple = tradeRe.path("trade.pzMultiple");
-        Integer borrowAmount = tradeRe.path("trade.borrowAmount");
-        Double money = capitalAmount + Math.ceil(capitalAmount/pzMultiple);
-        float after_borrowAmount = borrowAmount + capitalAmount;
+        BigDecimal pzMultiple = new BigDecimal(tradeRe.path("trade.pzMultiple").toString());
+        BigDecimal borrowAmount = new BigDecimal(tradeRe.path("trade.borrowAmount").toString());
+        BigDecimal money = capitalAmount.add(capitalAmount.divide(pzMultiple,0,BigDecimal.ROUND_HALF_UP));
+        BigDecimal after_borrowAmount = borrowAmount.add(capitalAmount);
         //验证预计算并断言
         Response lever = trade.contracts_cal_leverCapital(map);
         lever.then().body("success",equalTo(true));
-        lever.then().body("capitalOrder.money",equalTo(Float.parseFloat(money.toString())));
+        lever.then().body("capitalOrder.money",equalTo(Integer.parseInt(money.toString())));
         lever.then().body("capitalOrder.orderType",equalTo(11003));
-        lever.then().body("capitalOrder.afterTrade.borrowAmount",is(after_borrowAmount));
+        lever.then().body("capitalOrder.afterTrade.borrowAmount",equalTo(Float.parseFloat(after_borrowAmount.toString())));
 
     }
 }

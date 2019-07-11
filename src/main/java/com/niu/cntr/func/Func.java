@@ -26,21 +26,26 @@ public class Func {
         Product product = new Product();
         JsonPath js = new JsonPath(product.queryone(productId, CntrConfig.getInstance().brandId).asString());
         List<Long> datavers = js.getList("product.datVer");
-        String dataver = String.valueOf(datavers.get(0));
-        //产品数据版本，initiDuration
-        List<String> cycleOptions = js.getList("product.cycleOptions");
-        String initiDuration = cycleOptions.get(0).split(",")[0];
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("id",Action.random());
-        map.put("datVer",dataver);
-        map.put("productId",productId);
-        map.put("initiDuration",initiDuration);
-        map.put("pzMultiple",pzMultiple);
-        map.put("borrowAmount",borrowAmount);
-        map.put("deductionAmount",deductionAmount);
-        map.put("accountId", Action.random());
-        map.put("phoneNumber",Action.getTelephone());
-        return product.contract_create(map);
+        if(datavers != null){
+            String dataver = String.valueOf(datavers.get(0));
+            //产品数据版本，initiDuration
+            List<String> cycleOptions = js.getList("product.cycleOptions");
+            String initiDuration = cycleOptions.get(0).split(",")[0];
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("id", Action.random());
+            map.put("datVer", dataver);
+            map.put("productId", productId);
+            map.put("initiDuration", initiDuration);
+            map.put("pzMultiple", pzMultiple);
+            map.put("borrowAmount", borrowAmount);
+            map.put("deductionAmount", deductionAmount);
+            map.put("accountId", Action.random());
+            map.put("phoneNumber", Action.getTelephone());
+            return product.contract_create(map);
+        }
+        else {
+            return null;
+        }
     }
 
     //放大功能封装

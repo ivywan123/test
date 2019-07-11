@@ -36,13 +36,6 @@ public class ContractleverCapitalTest {
 
     @BeforeMethod
     public void setUp() {
-        if(trade==null){
-            trade=new Trade();
-        }
-        if(wf == null){
-            wf = new wftransaction();
-        }
-
     }
 
     @AfterMethod
@@ -54,6 +47,12 @@ public class ContractleverCapitalTest {
     @BeforeGroups(groups = { "lever" })
     //为前面的用例创造一个按天合约
     public void CreateDay(){
+        if(trade==null){
+            trade=new Trade();
+        }
+        if(wf == null){
+            wf = new wftransaction();
+        }
         String productId = "52825118558251";
         Response re = func.trade_new(productId,5000,10,0);
         wf.setAccountId(re.path("trade.accountId"));
@@ -70,10 +69,12 @@ public class ContractleverCapitalTest {
         Response tradeRe = func.queryTrade(wf.getBrandId(),wf.getAccountId(),wf.getId());
         int fundPoolId = tradeRe.path("trade.fundPoolId");
         //获取资金池的redis值
-        RedisTemplate redisTemplate= redisUtils.getRedisConnect(redisUtils.DataSourceEnvironment.trade);
-        Double catital = Double.parseDouble(redisTemplate.opsForHash().get("capital",fundPoolId).toString());  //获取哈希key
+        //todo:有bug
+        RedisTemplate redisTemplate= redisUtils.getRedisConnect(redisUtils.DataSourceEnvironment.cntr);
+//        Object a = redisTemplate.opsForHash().get("capital:"+fundPoolId,"useAmount");
+        Long catital = Long.parseLong(redisTemplate.opsForHash().get("capital:"+fundPoolId,"useAmount").toString());  //获取哈希key
         //设置redis值为一个不够的值
-        redisTemplate.opsForHash().increment("capital",fundPoolId,100);
+        redisTemplate.opsForHash().increment("capital:"+fundPoolId,"useAmount",100);
         //放大合约，报错
         HashMap<String, Object> map = new HashMap<>();
         float capitalAmount = 1000f;   //放大1000
@@ -84,13 +85,13 @@ public class ContractleverCapitalTest {
         map.put("datVer",wf.getProductDateVer());
         map.put("id", Action.random());
         map.put("brandId", wf.getBrandId());
-        redisTemplate.opsForHash().increment("capital",fundPoolId,catital);
+//        redisTemplate.opsForHash().increment("capital",fundPoolId,catital);
         try {
             Response lever = trade.contracts_leverCapital(map);
             lever.then().body("success", equalTo(false));
         }finally {
             //重置redis值
-            redisTemplate.opsForHash().increment("capital",fundPoolId,catital);
+            redisTemplate.opsForHash().increment("capital:"+fundPoolId,"useAmount",catital);
         }
     }
 
@@ -165,22 +166,23 @@ public class ContractleverCapitalTest {
         //获取合约详情
         Response tradeRe = func.queryTrade(wf.getBrandId(),wf.getAccountId(),wf.getId());
         //合约借款 合约杠杆
-        BigDecimal pzMultiple = tradeRe.path("trade.pzMultiple");
-        BigDecimal borrowAmount = tradeRe.path("trade.borrowAmount");
+        BigDecimal pzMultiple = new BigDecimal(tradeRe.path("trade.pzMultiple").toString());
+        BigDecimal borrowAmount = new BigDecimal(tradeRe.path("trade.borrowAmount").toString());
         BigDecimal money = capitalAmount.add(capitalAmount.divide(pzMultiple,0,BigDecimal.ROUND_HALF_UP));
         BigDecimal after_borrowAmount = borrowAmount.add(capitalAmount);
         //验证放大并断言
         Response lever = trade.contracts_leverCapital(map);
         lever.then().body("success", equalTo(true));
-        lever.then().body("capitalOrder.money", equalTo(money));
+        lever.then().body("capitalOrder.money", equalTo(Integer.parseInt(money.toString())));
         lever.then().body("capitalOrder.orderType", equalTo(11003));
-        lever.then().body("capitalOrder.afterTrade.borrowAmount", is(after_borrowAmount));
+        lever.then().body("capitalOrder.afterTrade.borrowAmount", equalTo(Float.parseFloat(after_borrowAmount.toString())));
 
     }
 
     //6、使用可提现金（利润+非杠杆）放大，盘后，有可提，需验证合约累计盈亏=利润  无同步市值接口
     @Test(groups = {"close","lever"})
     public void testContracts_leverCapital_flag1() {
+        //todo:市值没有更新，无利润
         //合约追加非杠杆
         func.trade_Capital(wf.getId(),wf.getAccountId(),1000);
         //添加利润
@@ -203,8 +205,8 @@ public class ContractleverCapitalTest {
         //验证放大并断言
         Response lever = trade.contracts_leverCapital(map);
         lever.then().body("success", equalTo(true));
-        lever.then().body("capitalOrder.unLeverSubAmount", equalTo(200));
-        lever.then().body("capitalOrder.profitAmount", equalTo(profit));
+        lever.then().body("capitalOrder.unLeverSubAmount", equalTo(200));  //todo
+        lever.then().body("capitalOrder.profitAmount", equalTo(profit));  //todo
         lever.then().body("capitalOrder.orderType", equalTo(11003));
         lever.then().body("capitalOrder.status", equalTo(1));
     }
