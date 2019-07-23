@@ -21,6 +21,7 @@ import static org.testng.Assert.*;
 //1、正常终止
 //2、分润的终止，补偿收入
 //3、
+@Test(groups = "open")
 public class ContractDeleteTest {
     Trade trade;
     Func func = new Func();
@@ -47,7 +48,7 @@ public class ContractDeleteTest {
     public void tearDown() {
     }
 
-    @Test(groups = "open")
+
     public void testContracts_delete() {
         //新增合约
         HashMap<String, Object> map = new HashMap<>();

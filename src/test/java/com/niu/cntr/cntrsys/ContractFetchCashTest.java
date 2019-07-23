@@ -16,6 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.testng.Assert.*;
 
 //提取现金
+@Test(groups = "close")
 public class ContractFetchCashTest {
     Trade trade;
     Func func = new Func();
@@ -43,7 +44,7 @@ public class ContractFetchCashTest {
         func.trade_delete(wf.getId(),wf.getAccountId());
     }
 
-    @Test(groups = "close")
+
     //缩小合约，提取5.36
     public void testContracts_fetchCash() {
         //新增合约

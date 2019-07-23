@@ -19,6 +19,7 @@ import static org.testng.Assert.*;
 //1、正常追加
 //2、追加金额不能小于总操盘资金1%
 //3、在途的操作（修改redis）
+@Test(groups = "open")
 public class ContractCapitalTest {
     wftransaction wf;
     Trade trade;
@@ -48,7 +49,7 @@ public class ContractCapitalTest {
         func.trade_delete(wf.getId(), wf.getAccountId());
     }
 
-    @Test(groups = "open")
+
     //按天合约追加非杠杆100.23
     public void testContracts_capital() {
         //新增合约
@@ -81,7 +82,7 @@ public class ContractCapitalTest {
 
     }
 
-    @Test(groups = "open")
+
     //按天合约追加非杠杆0.23
     public void testContracts_capital_no() {
         //新增合约

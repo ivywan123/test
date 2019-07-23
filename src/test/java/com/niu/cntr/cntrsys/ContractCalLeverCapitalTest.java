@@ -16,6 +16,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 
 //合约放大预计算
+@Test(groups = {"open"})
 public class ContractCalLeverCapitalTest {
     Trade trade;
     Func func = new Func();
@@ -47,7 +48,7 @@ public class ContractCalLeverCapitalTest {
         func.trade_delete(wf.getId(), wf.getAccountId());
     }
 
-    @Test(groups = {"open"})
+
     //按天合约放大1000
     //dataprovider
     public void testContracts_cal_leverCapital() {

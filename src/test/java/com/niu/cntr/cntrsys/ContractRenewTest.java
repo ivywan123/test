@@ -31,6 +31,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 
 //延期卖出
 //合约盈利才能展期
+@Test(groups = "open")
 public class ContractRenewTest {
     wftransaction wf;
     Trade trade;
@@ -60,7 +61,7 @@ public class ContractRenewTest {
         func.trade_delete(wf.getId(),wf.getAccountId());
     }
 
-    @Test(groups = "open")
+
     //不符合操作时间
     public void testContracts_renew_noTime() {
         HashMap<String, Object> map = new HashMap<>();
@@ -78,7 +79,7 @@ public class ContractRenewTest {
         renew.then().body("resultMsg",equalTo("请在到期日当天 23:59前操作！"));
     }
 
-    @Test(groups = "open")
+
     //已结算的合约延期报错
     public void testContracts_renew_noStatus() {
         //结算合约
@@ -98,7 +99,7 @@ public class ContractRenewTest {
         renew.then().body("resultMsg",equalTo("当前合约不存在,或与合约关联的品牌有误"));
     }
 
-    @Test(groups = "open")
+
     //非盈利的合约延期报错
     public void testContracts_renew_noProfit() {
         WftransactionService wftransactionService = new wftransactionServiceImpl();
@@ -119,7 +120,7 @@ public class ContractRenewTest {
         renew.then().body("resultMsg",equalTo("合约盈利情况下才能进行展期"));
     }
 
-    @Test(groups = "open")
+
     //正常延期
     public void testContracts_renew_normal() {
         WftransactionService wftransactionService = new wftransactionServiceImpl();

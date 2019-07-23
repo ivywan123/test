@@ -16,6 +16,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.testng.Assert.*;
 
 //缩小合约预计算用例
+@Test(groups = "open")
 public class ContractCalreduceCapitalTest {
     Trade trade;
     Func func = new Func();
@@ -43,7 +44,7 @@ public class ContractCalreduceCapitalTest {
         func.trade_delete(wf.getId(), wf.getAccountId());
     }
 
-    @Test(groups = "open")
+
     //按天合约缩小500
     //todo:dataprovider
     public void testContracts_cal_reduceCapital() {

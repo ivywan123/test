@@ -24,6 +24,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
  * 1、冒烟用例：
  * 2、
  */
+@Test(groups = "open")
 public class ContractCreateTest {
     Product product;
     Func func = new Func();
@@ -44,8 +45,6 @@ public class ContractCreateTest {
         func.trade_delete(wf.getId(), wf.getAccountId());
     }
 
-
-    @Test(groups = "open")
     //新增按天合约
     //todo：dataprovider
     public void testContract_create() {

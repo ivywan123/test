@@ -28,6 +28,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 //3、合约只有多支停牌股，传入部分停牌股
 //4、合约只有多支停牌股，传入全部停牌股（normal） 原合约终止和保留 true
 
+@Test(groups = "open")
 public class ContractConvertTest {
     Trade trade;
     Func func = new Func();
@@ -58,7 +59,7 @@ public class ContractConvertTest {
     }
 
     //1、合约无停牌股
-    @Test(groups = "open")
+
     public void testContracts_convert_nostk(){
         Product product = new Product();
         HashMap<String, Object> map = new HashMap<>();
@@ -108,7 +109,7 @@ public class ContractConvertTest {
 
     //4、合约有多支停牌股，传入全部停牌股（normal） 原合约终止和保留
     //盘中
-    @Test(groups = "open",dataProvider="retain")
+    @Test(dataProvider="retain")
     public void testContracts_convert(boolean retain) {
         Product product = new Product();
         HashMap<String, Object> map = new HashMap<>();

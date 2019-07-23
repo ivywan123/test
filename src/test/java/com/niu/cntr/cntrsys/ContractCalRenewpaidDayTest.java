@@ -17,6 +17,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.testng.Assert.*;
 
 //合约展期预计算天数
+@Test(groups = "open")
 public class ContractCalRenewpaidDayTest {
     Trade trade;
     Func func = new Func();
@@ -37,7 +38,7 @@ public class ContractCalRenewpaidDayTest {
         wf.setAccountId(re.path("trade.accountId"));
         wf.setBrandId(re.path("trade.brandId"));
         wf.setId(re.path("trade.id"));
-        wf.setTradeId(re.path("trade.tradeId"));
+        wf.setTradeId(Long.parseLong(re.path("trade.tradeId").toString()));
         wf.setProductDateVer(re.path("trade.product.datVer"));
     }
 
@@ -46,7 +47,7 @@ public class ContractCalRenewpaidDayTest {
         func.trade_delete(wf.getId(), wf.getAccountId());
     }
 
-    @Test(groups = "open")
+
     public void testContracts_cal_renew_paidDay_noTime() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("tradeId",wf.getId());
@@ -57,11 +58,11 @@ public class ContractCalRenewpaidDayTest {
         paidcash.then().body("success",equalTo(false));
         paidcash.then().body("errCode",equalTo("500429"));
         paidcash.then().body("status",equalTo("false"));
-        paidcash.then().body("resultMsg",equalTo("请在到期日当天 23:59前操作！"));
+        paidcash.then().body("resultMsg",equalTo("请在到期日当天 13:00前操作！"));
 
     }
 
-    @Test(groups = "open")
+
     public void testContracts_cal_renew_paidDay_normal() {
         HashMap<String, Object> map = new HashMap<>();
         Long tradeId = wf.getId();

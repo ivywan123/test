@@ -38,13 +38,14 @@ public class ContractleverCapitalTest {
     public void setUp() {
     }
 
+    @BeforeGroups(groups = { "open" })
     @AfterMethod
     public void tearDown() {
         //终止合约
         func.trade_delete(wf.getId(),wf.getAccountId());
     }
 
-    @BeforeGroups(groups = { "lever" })
+    @BeforeGroups(groups = { "open"})
     //为前面的用例创造一个按天合约
     public void CreateDay(){
         if(trade==null){
@@ -97,7 +98,7 @@ public class ContractleverCapitalTest {
     }
 */
 
-    @Test(groups = {"open","lever"})
+    @Test(groups = {"open"})
     //2、已结束合约放大
     public void testContracts_leverCapital_close(){
         //结算合约
@@ -115,7 +116,7 @@ public class ContractleverCapitalTest {
         lever.then().body("success", equalTo(false));
     }
 
-    @Test(groups = {"open","lever"})
+    @Test(groups = {"open"})
     //3、放大借款<可申请范围 小于1000  大于5000000
     public void testContracts_leverCapital_out() {
         HashMap<String, Object> map = new HashMap<>();
@@ -135,7 +136,7 @@ public class ContractleverCapitalTest {
     }
 
     //4、放大借款不为千的整数倍
-    @Test(groups = {"open","lever"})
+    @Test(groups = {"open"})
     public void testContracts_leverCapital_Nomoney() {
         HashMap<String, Object> map = new HashMap<>();
         float capitalAmount = 1100f;   //放大1100
@@ -150,7 +151,7 @@ public class ContractleverCapitalTest {
         lever.then().body("success", equalTo(false));
     }
 
-    @Test(groups = {"open","lever"})
+    @Test(groups = {"open"})
     //5、不使用可提现金，按天合约放大1000
     //todo:dataprovider
     public void testContracts_leverCapital() {
@@ -181,37 +182,8 @@ public class ContractleverCapitalTest {
 
     }
 
-    //6、使用可提现金（利润+非杠杆）放大，盘后，有可提，需验证合约累计盈亏=利润  无同步市值接口
-    @Test(groups = {"close","lever"})
-    public void testContracts_leverCapital_flag1() {
-        //todo:市值没有更新，无利润
-        //合约追加非杠杆
-        func.trade_Capital(wf.getId(),wf.getAccountId(),1000);
-        //添加利润
-        //改造合约盈利100
-        T_cntrService t_cntrService = new T_cntrServiceImpl();
-        long profit = 100;
-        Long cntrId = wf.getTradeId();
-        t_cntrService.updateProfit(profit,cntrId);
-        Action.sleep(30000);
-        //放大
-        HashMap<String, Object> map = new HashMap<>();
-        float capitalAmount = 3000f;   //放大1000
-        map.put("tradeId",wf.getId());
-        map.put("accountId",wf.getAccountId());
-        map.put("capitalAmount",capitalAmount); //放大3000，10倍，杠杆本金增加300，使用利润100，非杠杆200
-        map.put("flag",true);  //使用可提现金
-        map.put("datVer",wf.getProductDateVer());
-        map.put("id", Action.random());
-        map.put("brandId", wf.getBrandId());
-        //验证放大并断言
-        Response lever = trade.contracts_leverCapital(map);
-        lever.then().body("success", equalTo(true));
-        lever.then().body("capitalOrder.unLeverSubAmount", equalTo(200));  //todo
-        lever.then().body("capitalOrder.profitAmount", equalTo(profit));  //todo
-        lever.then().body("capitalOrder.orderType", equalTo(11003));
-        lever.then().body("capitalOrder.status", equalTo(1));
-    }
+
+
 
     //8、补亏的放大  总资产-借款-杠杆<0
     //

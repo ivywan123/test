@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 
 //合约展期预计算现金
+@Test(groups = "open")
 public class ContractCalRenewpaidCashTest {
     Trade trade;
     Func func = new Func();
@@ -39,7 +40,7 @@ public class ContractCalRenewpaidCashTest {
         wf.setAccountId(re.path("trade.accountId"));
         wf.setBrandId(re.path("trade.brandId"));
         wf.setId(re.path("trade.id"));
-        wf.setTradeId(re.path("trade.tradeId"));
+        wf.setTradeId(Long.parseLong(re.path("trade.tradeId").toString()));
         wf.setProductDateVer(re.path("trade.product.datVer"));
     }
 
@@ -48,7 +49,7 @@ public class ContractCalRenewpaidCashTest {
         func.trade_delete(wf.getId(), wf.getAccountId());
     }
 
-    @Test(groups = "open")
+
     //非到期日当天 13:00前操作
     public void testContracts_cal_renew_paidCash_noTime() {
         HashMap<String, Object> map = new HashMap<>();
@@ -64,7 +65,6 @@ public class ContractCalRenewpaidCashTest {
         paidcash.then().body("resultMsg",equalTo("请在到期日当天 23:59前操作！"));
     }
 
-    @Test(groups = "open")
     //可正常计算延期
     public void testContracts_cal_renew_paidCash_normal() {
         HashMap<String, Object> map = new HashMap<>();

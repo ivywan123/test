@@ -14,6 +14,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.testng.Assert.*;
 
 //查询合约详情
+@Test(groups = "open")
 public class ContractQueryDetailTest {
     Trade trade;
     String random=String.valueOf(System.currentTimeMillis());
@@ -30,7 +31,7 @@ public class ContractQueryDetailTest {
     public void tearDown() {
     }
 
-    @Test(groups = "open")
+
     public void testContracts_queryContractDetail() {
         //新增合约
         HashMap<String, Object> map = new HashMap<>();
