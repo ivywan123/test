@@ -62,6 +62,7 @@ public class ContractleverCapitalTest {
         wf.setProductDateVer(re.path("trade.product.datVer"));
     }
 
+    /*
     @Test(groups = {"open","lever"})
     //1、资金池不满足
     public void testContracts_leverCapital_NoCatital(){
@@ -94,6 +95,7 @@ public class ContractleverCapitalTest {
             redisTemplate.opsForHash().increment("capital:"+fundPoolId,"useAmount",catital);
         }
     }
+*/
 
     @Test(groups = {"open","lever"})
     //2、已结束合约放大

@@ -8,6 +8,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -52,7 +53,7 @@ public class ContractCalreduceCapitalTest {
         Long accountId = wf.getAccountId();
         wf.setId(tradeId);
         wf.setAccountId(accountId);
-        float reduceAmount = 500;   //缩小500
+        BigDecimal reduceAmount = new BigDecimal(500);   //缩小500
         map.put("tradeId",tradeId);
         map.put("accountId",accountId);
         map.put("borrowAmount",reduceAmount);  //缩小500
@@ -60,21 +61,21 @@ public class ContractCalreduceCapitalTest {
         //为断言做数据准备
         //获取合约详情
         Response tradeRe = func.queryTrade(wf.getBrandId(),wf.getAccountId(),wf.getId());
-        Integer pzMultiple = tradeRe.path("trade.pzMultiple");
-        Integer borrowAmount = tradeRe.path("trade.borrowAmount");
-        Integer leverCapitalAmount =  tradeRe.path("trade.leverCapitalAmount");
-        float after_borrowAmount = borrowAmount - reduceAmount;
-        Double after_lever = leverCapitalAmount - Math.ceil(reduceAmount/pzMultiple);
-        Double after_unlever = leverCapitalAmount - after_lever;
+        BigDecimal pzMultiple = new BigDecimal(tradeRe.path("trade.pzMultiple").toString());
+        BigDecimal borrowAmount = new BigDecimal(tradeRe.path("trade.borrowAmount").toString());
+        BigDecimal leverCapitalAmount = new BigDecimal(tradeRe.path("trade.leverCapitalAmount").toString());
+        BigDecimal after_borrowAmount = borrowAmount.subtract(reduceAmount);
+        BigDecimal after_lever = leverCapitalAmount.subtract(reduceAmount.divide(pzMultiple,0,BigDecimal.ROUND_HALF_UP));
+        BigDecimal after_unlever = leverCapitalAmount.subtract(after_lever);
 
         Response redu = trade.contracts_cal_reduceCapital(map);
         redu.then().body("success",equalTo(true));
         redu.then().body("reduceOrder.status",equalTo(0));
-        redu.then().body("reduceOrder.preTrade.borrowAmount",is(Float.valueOf(borrowAmount)));
-        redu.then().body("reduceOrder.preTrade.leverCapitalAmount",is(Float.valueOf(leverCapitalAmount)));
+        redu.then().body("reduceOrder.preTrade.borrowAmount",equalTo(Float.parseFloat(borrowAmount.toString())));
+        redu.then().body("reduceOrder.preTrade.leverCapitalAmount",equalTo(Float.parseFloat(leverCapitalAmount.toString())));
         redu.then().body("reduceOrder.preTrade.unLeverCapitalAmount",is(0.0f));
-        redu.then().body("reduceOrder.afterTrade.borrowAmount",is(after_borrowAmount));
-        redu.then().body("reduceOrder.afterTrade.leverCapitalAmount",is(Float.parseFloat(after_lever.toString())));
-        redu.then().body("reduceOrder.afterTrade.unLeverCapitalAmount",is(Float.parseFloat(after_unlever.toString())));
+        redu.then().body("reduceOrder.afterTrade.borrowAmount",equalTo(Float.parseFloat(after_borrowAmount.toString())));
+        redu.then().body("reduceOrder.afterTrade.leverCapitalAmount",equalTo(Float.parseFloat(after_lever.toString())));
+        redu.then().body("reduceOrder.afterTrade.unLeverCapitalAmount",equalTo(Float.parseFloat(after_unlever.toString())));
     }
 }

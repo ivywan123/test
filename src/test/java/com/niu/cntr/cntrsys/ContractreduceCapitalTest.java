@@ -56,6 +56,7 @@ public class ContractreduceCapitalTest {
     }
 
     //按天合约缩小500
+    @Test(groups = "open")
     public void testContracts_reduceCapital() {
         HashMap<String, Object> map = new HashMap<>();
         BigDecimal reduceAmount = new BigDecimal(500);   //缩小500
@@ -70,9 +71,9 @@ public class ContractreduceCapitalTest {
         //获取合约详情
         Response tradeRe = func.queryTrade(wf.getBrandId(),wf.getAccountId(),wf.getId());
         //合约借款 合约杠杆
-        BigDecimal pzMultiple = tradeRe.path("trade.pzMultiple");
-        BigDecimal borrowAmount = tradeRe.path("trade.borrowAmount");
-        BigDecimal leverCapitalAmount =  tradeRe.path("trade.leverCapitalAmount");
+        BigDecimal pzMultiple = new BigDecimal(tradeRe.path("trade.pzMultiple").toString());
+        BigDecimal borrowAmount = new BigDecimal(tradeRe.path("trade.borrowAmount").toString());
+        BigDecimal leverCapitalAmount = new BigDecimal(tradeRe.path("trade.leverCapitalAmount").toString());
         BigDecimal after_borrowAmount = borrowAmount.subtract(reduceAmount);
         BigDecimal after_lever = leverCapitalAmount.subtract(reduceAmount.divide(pzMultiple,0,BigDecimal.ROUND_HALF_UP));
         BigDecimal after_unlever = leverCapitalAmount.subtract(after_lever);
@@ -80,16 +81,17 @@ public class ContractreduceCapitalTest {
         Response redu = trade.contracts_reduceCapital(map);
         redu.then().body("success", equalTo(true));
         redu.then().body("reduceOrder.status", equalTo(1));
-        redu.then().body("reduceOrder.preTrade.borrowAmount", is(borrowAmount));
-        redu.then().body("reduceOrder.preTrade.leverCapitalAmount", is(leverCapitalAmount));
-        redu.then().body("reduceOrder.preTrade.unLeverCapitalAmount", is(0.0f));
-        redu.then().body("reduceOrder.afterTrade.borrowAmount", is(after_borrowAmount));
-        redu.then().body("reduceOrder.afterTrade.leverCapitalAmount", is(after_lever));
-        redu.then().body("reduceOrder.afterTrade.unLeverCapitalAmount", is(after_unlever));
+        redu.then().body("reduceOrder.preTrade.borrowAmount",equalTo(Float.parseFloat(borrowAmount.toString())));
+        redu.then().body("reduceOrder.preTrade.leverCapitalAmount",equalTo(Float.parseFloat(leverCapitalAmount.toString())));
+        redu.then().body("reduceOrder.preTrade.unLeverCapitalAmount",is(0.0f));
+        redu.then().body("reduceOrder.afterTrade.borrowAmount",equalTo(Float.parseFloat(after_borrowAmount.toString())));
+        redu.then().body("reduceOrder.afterTrade.leverCapitalAmount",equalTo(Float.parseFloat(after_lever.toString())));
+        redu.then().body("reduceOrder.afterTrade.unLeverCapitalAmount",equalTo(Float.parseFloat(after_unlever.toString())));
 
     }
 
     //2、合约状态检查（已结束合约缩小）
+    @Test(groups = "open")
     public void testContracts_reduceCapital_close() {
         //结算合约
         func.trade_delete(wf.getId(),wf.getAccountId());
@@ -106,11 +108,12 @@ public class ContractreduceCapitalTest {
     }
 
     //3、无持仓无委托缩小到0，校验借款和杠杆是否为0
+    @Test(groups = "open")
     public void testContracts_reduceCapital_zero(){
         HashMap<String, Object> map = new HashMap<>();
         //查询合约详情，确定缩小金额为借款金额
         Response tradeRe = func.queryTrade(wf.getBrandId(),wf.getAccountId(),wf.getId());
-        BigDecimal borrowAmount = tradeRe.path("trade.borrowAmount");
+        BigDecimal borrowAmount = new BigDecimal(tradeRe.path("trade.borrowAmount").toString());
         map.put("tradeId",wf.getId());
         map.put("accountId",wf.getAccountId());
         map.put("borrowAmount",borrowAmount); //缩小借款，即为全部缩小
@@ -119,8 +122,8 @@ public class ContractreduceCapitalTest {
         map.put("brandId", wf.getBrandId());
         Response redu = trade.contracts_reduceCapital(map);
         redu.then().body("reduceOrder.status", equalTo(1));
-        redu.then().body("reduceOrder.afterTrade.borrowAmount", equalTo(0));
-        redu.then().body("reduceOrder.afterTrade.leverCapitalAmount", equalTo(0));
+        redu.then().body("reduceOrder.afterTrade.borrowAmount", equalTo(0.0f));
+        redu.then().body("reduceOrder.afterTrade.leverCapitalAmount", equalTo(0.0f));
     }
 
 

@@ -4,6 +4,7 @@ public class t_cntr_pos {
     private Long Cntr_Id;
     private String Stk_Cd;
     private String Stk_Nm;
+    private String Stk_Cd_pre;
 
     public Long getCntr_Id() {
         return Cntr_Id;
@@ -27,5 +28,13 @@ public class t_cntr_pos {
 
     public void setStk_Nm(String stk_Nm) {
         Stk_Nm = stk_Nm;
+    }
+
+    public String getStk_Cd_pre() {
+        return Stk_Cd_pre;
+    }
+
+    public void setStk_Cd_pre(String stk_Cd_pre) {
+        Stk_Cd_pre = stk_Cd_pre;
     }
 }

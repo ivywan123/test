@@ -1,5 +1,6 @@
 package com.niu.cntr.cntrsys;
 
+import com.mysql.jdbc.StringUtils;
 import com.niu.cntr.CntrConfig;
 import com.niu.cntr.Service.TradeDaoImpl.T_cntr_posServiceImpl;
 import com.niu.cntr.Service.TradeService.T_cntr_posService;
@@ -14,6 +15,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -100,43 +102,43 @@ public class ContractConvertTest {
 
     @DataProvider(name = "retain")
     public Object[][] retain(){
-        return new Object[][]{{"false"}
-                ,{"true"}};
+        return new Object[][]{{false}
+                ,{true}};
     }
 
     //4、合约有多支停牌股，传入全部停牌股（normal） 原合约终止和保留
     //盘中
-    @Test(groups = "open",dataProvider = "retain")
+    @Test(groups = "open",dataProvider="retain")
     public void testContracts_convert(boolean retain) {
         Product product = new Product();
         HashMap<String, Object> map = new HashMap<>();
-        //买入两只股票
-        String stk_cd1 ="000001";
-        String stk_cd2 = "600123";
+        ArrayList<String> stks = new ArrayList<>();
         Integer qty = 200;
-        Response re =func.sendOrder(wf.getAccountId(),wf.getId(),stk_cd1,qty);
-        //盘后生成的合约，不能马上买入
-        if(re.path("status").equals("false")){
-            return;
-        }
-        func.sendOrder(wf.getAccountId(),wf.getId(),stk_cd2,qty);
-        //等待
-        Action.sleep(2000);
+        stks.add("000001");
+        stks.add("600123");
         //获取停牌股
         T_cntr_posService t_cntr_posService = new T_cntr_posServiceImpl();
         String suspendStk = CntrConfig.getInstance().suspendStk;
         String str[] = suspendStk.split(",");
-        String Stkstr = "";
-        if(suspendStk.length() != 0) {
-            for(int i=0;i<2;i++){
-                String stk = str[i];
-                System.out.println("stk_cd"+i);
-                String stkNm = func.queryStkNm(stk,wf.getBrandId()).path("stock.stockName");
-                //修改合约持仓
-                t_cntr_posService.updatePos(stk, stkNm, wf.getTradeId(), "stk_cd"+i);
+        int num;
+        ArrayList<String> suspendstk_use = new ArrayList<>();
+        for(int i=0;i<stks.size();i++){
+            Response re =func.sendOrder(wf.getAccountId(),wf.getId(),stks.get(i),qty);
+            //盘后生成的合约，不能马上买入，直接返回，会断言用例为true
+            if(re.path("success").equals(false)){
+                return;
             }
-            Stkstr = str[0]+","+str[1];
+            //等待
+            Action.sleep(20000);
+            String stkNm = func.queryStkNm(str[i], wf.getBrandId()).path("stock.stockName");
+            //修改合约持仓
+            num=t_cntr_posService.updatePos(str[i], stkNm, wf.getTradeId(), stks.get(i));
+            if(num>0) {
+                suspendstk_use.add(str[i]);
+            }
         }
+        String Stkstr = org.apache.commons.lang3.StringUtils.join(suspendstk_use.toArray(),",");
+
         //准备停牌产品信息 datVer productId  pzMultiple
         String new_productid = "52894567092551";  //停牌杠杆产品
         JsonPath js = new JsonPath(product.queryone(new_productid, wf.getBrandId()).asString());
@@ -155,18 +157,19 @@ public class ContractConvertTest {
         map.put("retain",retain);  //从dataprovider获取的参数
         try {
             Response cn = trade.contracts_convert(map);
-            cn.then().body("converTrade.tradeId", equalTo(wf.getId()));
-            cn.then().body("converTrade.status", equalTo(1));
-            cn.then().body("converTrade.oldEnd", equalTo(false));
-            cn.then().body("converTrade.newTrade.status", equalTo(1));
             cn.then().body("success", equalTo(true));
-            boolean status = trade.contracts_queryContractDetail(wf.getBrandId(), wf.getAccountId(), wf.getId()).then().extract().path("status");
+            cn.then().body("converTrade.tradeId", equalTo(wf.getId()));  //验证老合约编号
+            cn.then().body("converTrade.status", equalTo(1));
+            cn.then().body("converTrade.newTrade.status", equalTo(1));
+            int status = trade.contracts_queryContractDetail(wf.getBrandId(), wf.getAccountId(), wf.getId()).then().extract().path("trade.status");
             if(retain == false) {
                 //检验原合约是否保留
                 Assert.assertEquals(status,1);
+                cn.then().body("converTrade.oldEnd", equalTo(false));
             }else {
                 //检验原合约是否终止
                 Assert.assertEquals(status,3);
+                cn.then().body("converTrade.oldEnd", equalTo(true));
             }
         }catch (Exception e) {
             e.printStackTrace();
