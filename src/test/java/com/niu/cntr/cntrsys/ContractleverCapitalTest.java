@@ -29,6 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 //8、补亏的放大
 
 //当前产品无放大合约功能
+@Test(groups = {"open"})
 public class ContractleverCapitalTest {
     Trade trade;
     Func func = new Func();
@@ -36,18 +37,6 @@ public class ContractleverCapitalTest {
 
     @BeforeMethod
     public void setUp() {
-    }
-
-    @BeforeGroups(groups = { "open" })
-    @AfterMethod
-    public void tearDown() {
-        //终止合约
-        func.trade_delete(wf.getId(),wf.getAccountId());
-    }
-
-    @BeforeGroups(groups = { "open"})
-    //为前面的用例创造一个按天合约
-    public void CreateDay(){
         if(trade==null){
             trade=new Trade();
         }
@@ -63,7 +52,18 @@ public class ContractleverCapitalTest {
         wf.setProductDateVer(re.path("trade.product.datVer"));
     }
 
-    /*
+    @AfterMethod
+    public void tearDown() {
+        //终止合约
+        func.trade_delete(wf.getId(),wf.getAccountId());
+    }
+
+    @BeforeGroups(groups = { "open","lever"})
+    //为前面的用例创造一个按天合约
+    public void CreateDay(){
+
+    }
+
     @Test(groups = {"open","lever"})
     //1、资金池不满足
     public void testContracts_leverCapital_NoCatital(){
@@ -71,12 +71,10 @@ public class ContractleverCapitalTest {
         Response tradeRe = func.queryTrade(wf.getBrandId(),wf.getAccountId(),wf.getId());
         int fundPoolId = tradeRe.path("trade.fundPoolId");
         //获取资金池的redis值
-        //todo:有bug
         RedisTemplate redisTemplate= redisUtils.getRedisConnect(redisUtils.DataSourceEnvironment.cntr);
-//        Object a = redisTemplate.opsForHash().get("capital:"+fundPoolId,"useAmount");
-        Long catital = Long.parseLong(redisTemplate.opsForHash().get("capital:"+fundPoolId,"useAmount").toString());  //获取哈希key
+        String catital = redisTemplate.opsForHash().get("capital:"+fundPoolId,"useAmount").toString();  //获取哈希key
         //设置redis值为一个不够的值
-        redisTemplate.opsForHash().increment("capital:"+fundPoolId,"useAmount",100);
+        redisTemplate.opsForHash().put("capital:"+fundPoolId,"useAmount","100");
         //放大合约，报错
         HashMap<String, Object> map = new HashMap<>();
         float capitalAmount = 1000f;   //放大1000
@@ -87,18 +85,17 @@ public class ContractleverCapitalTest {
         map.put("datVer",wf.getProductDateVer());
         map.put("id", Action.random());
         map.put("brandId", wf.getBrandId());
-//        redisTemplate.opsForHash().increment("capital",fundPoolId,catital);
         try {
             Response lever = trade.contracts_leverCapital(map);
             lever.then().body("success", equalTo(false));
+            lever.then().body("errCode", equalTo("001"));
+            lever.then().body("resultMsg", equalTo("放大合约失败；可用余额不足。"));
         }finally {
             //重置redis值
-            redisTemplate.opsForHash().increment("capital:"+fundPoolId,"useAmount",catital);
+            redisTemplate.opsForHash().put("capital:"+fundPoolId,"useAmount",catital);
         }
     }
-*/
 
-    @Test(groups = {"open"})
     //2、已结束合约放大
     public void testContracts_leverCapital_close(){
         //结算合约
@@ -116,7 +113,6 @@ public class ContractleverCapitalTest {
         lever.then().body("success", equalTo(false));
     }
 
-    @Test(groups = {"open"})
     //3、放大借款<可申请范围 小于1000  大于5000000
     public void testContracts_leverCapital_out() {
         HashMap<String, Object> map = new HashMap<>();
@@ -136,7 +132,6 @@ public class ContractleverCapitalTest {
     }
 
     //4、放大借款不为千的整数倍
-    @Test(groups = {"open"})
     public void testContracts_leverCapital_Nomoney() {
         HashMap<String, Object> map = new HashMap<>();
         float capitalAmount = 1100f;   //放大1100
@@ -151,11 +146,9 @@ public class ContractleverCapitalTest {
         lever.then().body("success", equalTo(false));
     }
 
-    @Test(groups = {"open"})
+
     //5、不使用可提现金，按天合约放大1000
-    //todo:dataprovider
     public void testContracts_leverCapital() {
-        //新增合约
         HashMap<String, Object> map = new HashMap<>();
         BigDecimal capitalAmount = new BigDecimal(1000);   //放大1000
         map.put("tradeId",wf.getId());

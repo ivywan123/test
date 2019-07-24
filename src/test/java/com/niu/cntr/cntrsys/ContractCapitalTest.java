@@ -9,6 +9,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -40,7 +41,7 @@ public class ContractCapitalTest {
         wf.setAccountId(re.path("trade.accountId"));
         wf.setBrandId(re.path("trade.brandId"));
         wf.setId(re.path("trade.id"));
-        wf.setTradeId(re.path("trade.tradeId"));
+        wf.setTradeId(Long.parseLong(re.path("trade.tradeId").toString()));
         wf.setProductDateVer(re.path("trade.product.datVer"));
     }
 
@@ -54,7 +55,7 @@ public class ContractCapitalTest {
     public void testContracts_capital() {
         //新增合约
         HashMap<String, Object> map = new HashMap<>();
-        float capitalAmount = 100.23f;
+        BigDecimal capitalAmount = new BigDecimal(100.23);
         map.put("tradeId",wf.getId());
         map.put("accountId",wf.getAccountId());
         map.put("brandId", wf.getBrandId());
@@ -64,21 +65,21 @@ public class ContractCapitalTest {
         //为断言做数据准备
         //合约借款 合约杠杆
         Response re = func.queryTrade(wf.getBrandId(),wf.getAccountId(),wf.getId());
-        Integer pzMultiple = re.path("trade.pzMultiple");
-        Integer borrowAmount = re.path("trade.borrowAmount");
-        Integer leverCapitalAmount =  re.path("trade.leverCapitalAmount");
-        Integer unlever = re.path("trade.unLeverCapitalAmount");
-        float after_unlever = unlever + capitalAmount;
+        BigDecimal pzMultiple = new BigDecimal(re.path("trade.pzMultiple").toString());
+        BigDecimal borrowAmount = new BigDecimal(re.path("trade.borrowAmount").toString());
+        BigDecimal leverCapitalAmount = new BigDecimal(re.path("trade.leverCapitalAmount").toString());
+        BigDecimal unlever = new BigDecimal(re.path("trade.unLeverCapitalAmount").toString());
+        BigDecimal after_unlever = unlever.add(capitalAmount);
 
         Response cap = trade.contracts_capital(map);
         cap.then().body("success", equalTo(true));
         cap.then().body("capitalOrder.status", equalTo(1));
-        cap.then().body("capitalOrder.preTrade.borrowAmount", is(Float.valueOf(borrowAmount)));
-        cap.then().body("capitalOrder.preTrade.leverCapitalAmount", is(Float.valueOf(leverCapitalAmount)));
-        cap.then().body("capitalOrder.preTrade.unLeverCapitalAmount", is(Float.valueOf(unlever)));
-        cap.then().body("capitalOrder.afterTrade.borrowAmount", is(Float.valueOf(borrowAmount)));
-        cap.then().body("capitalOrder.afterTrade.leverCapitalAmount", is(Float.valueOf(leverCapitalAmount)));
-        cap.then().body("capitalOrder.afterTrade.unLeverCapitalAmount", is(after_unlever));
+        cap.then().body("capitalOrder.preTrade.borrowAmount", equalTo(Float.parseFloat(borrowAmount.toString())));
+        cap.then().body("capitalOrder.preTrade.leverCapitalAmount", equalTo(Float.parseFloat(leverCapitalAmount.toString())));
+        cap.then().body("capitalOrder.preTrade.unLeverCapitalAmount", equalTo(Float.parseFloat(unlever.toString())));
+        cap.then().body("capitalOrder.afterTrade.borrowAmount", equalTo(Float.parseFloat(borrowAmount.toString())));
+        cap.then().body("capitalOrder.afterTrade.leverCapitalAmount", equalTo(Float.parseFloat(leverCapitalAmount.toString())));
+        cap.then().body("capitalOrder.afterTrade.unLeverCapitalAmount", equalTo(Float.parseFloat(after_unlever.toString())));
 
     }
 
@@ -97,7 +98,7 @@ public class ContractCapitalTest {
         Response cap = trade.contracts_capital(map);
         cap.then().body("success", equalTo(false));
         cap.then().body("status", equalTo("false"));
-        cap.then().body("errCode", equalTo(500411));
+        cap.then().body("errCode", equalTo("500411"));
         cap.then().body("resultMsg", equalTo("追加保证金不能小于当前方案总操盘资金的1%"));
     }
 

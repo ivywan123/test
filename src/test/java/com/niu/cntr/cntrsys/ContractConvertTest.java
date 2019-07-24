@@ -68,7 +68,7 @@ public class ContractConvertTest {
         Integer qty = 200;
         Response re =func.sendOrder(wf.getAccountId(),wf.getId(),stk_cd1,qty);
         //盘后生成的合约，不能马上买入
-        if(re.path("status").equals("false")){
+        if(re.path("success").equals(false)){
             return;
         }
         //等待
@@ -91,11 +91,11 @@ public class ContractConvertTest {
         try {
             Response cn = trade.contracts_convert(map);
             cn.then().body("success", equalTo(false));
-            cn.then().body("errCode", equalTo(500435));
+            cn.then().body("errCode", equalTo("001"));
             cn.then().body("status", equalTo("false"));
-            cn.then().body("resultMsg", equalTo("所传股票并非全部停牌"));
+            cn.then().body("resultMsg", equalTo("停牌股转合约终止旧合约,必须转移全部持仓"));
             //未执行停牌转合约，原合约不终止
-            trade.contracts_queryContractDetail(wf.getBrandId(),wf.getAccountId(),wf.getId()).then().body("status",equalTo(1));
+            func.queryTrade(wf.getBrandId(),wf.getAccountId(),wf.getId()).then().body("trade.status",equalTo(1));
         }catch (Exception e) {
             e.printStackTrace();
         }

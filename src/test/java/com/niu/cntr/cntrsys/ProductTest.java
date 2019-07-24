@@ -1,6 +1,7 @@
 package com.niu.cntr.cntrsys;
 
 import com.niu.cntr.CntrConfig;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -10,10 +11,11 @@ import static org.hamcrest.Matchers.equalTo;
 /**
  * Created by admin on 2019/4/28.
  */
+@Test(groups = "open")
 public class ProductTest {
     Product product;
 
-    @BeforeTest
+    @BeforeMethod
     void setUp(){
         if(product==null){
             product=new Product();
@@ -29,13 +31,6 @@ public class ProductTest {
                 .spec(product.getResponseSpec());
     }
 
-    //查询所有产品时不传品牌ID
-    @Test
-//    void listwhinnull(){
-//        product.list(null).then().statusCode(200).body("errorCode",equalTo(001));
-//    }
-
-
     //查询某个产品信息测试
     @DataProvider(name = "productquery")
     public Object[][] providedata(){
@@ -43,8 +38,8 @@ public class ProductTest {
     }
 
     @Test(dataProvider = "productquery")
-    void queryone(String productId,Long brandId,String expt,String exptvalue){
-        product.queryone(productId,brandId).then().spec(product.getResponseSpec())
+    void queryone(String productId,String brandId,String expt,String exptvalue){
+        product.queryone(productId,Long.parseLong(brandId)).then().spec(product.getResponseSpec())
                 .body(expt,equalTo(exptvalue));
     }
 

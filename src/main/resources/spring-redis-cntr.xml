@@ -24,5 +24,7 @@
         <property name="connectionFactory" ref="connectionFactory"/>
         <property name="keySerializer" ref="stringReadisSerializer"/>
         <property name="valueSerializer" ref="stringReadisSerializer"/>
+        <property name="hashKeySerializer" ref="stringReadisSerializer"/>
+        <property name="hashValueSerializer" ref="stringReadisSerializer"/>
     </bean>
 </beans>

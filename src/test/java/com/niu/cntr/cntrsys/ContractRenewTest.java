@@ -76,7 +76,7 @@ public class ContractRenewTest {
         renew.then().body("success",equalTo(false));
         renew.then().body("errCode",equalTo("500429"));
         renew.then().body("status",equalTo("false"));
-        renew.then().body("resultMsg",equalTo("请在到期日当天 23:59前操作！"));
+        renew.then().body("resultMsg",equalTo("请在到期日当天 13:00前操作！"));
     }
 
 
@@ -163,7 +163,7 @@ public class ContractRenewTest {
         renew.then().body("renewTrans.cost",equalTo(Float.parseFloat(renewPaid[0].toString())));
         //判断合约是否限买，需要读写redis
         RedisTemplate redisTemplate= redisUtils.getRedisConnect(redisUtils.DataSourceEnvironment.cntr);
-        boolean limit = redisTemplate.opsForHash().hasKey("contract:forbidden:buy",wf.getId());  //判断哈希key是否存在
-        Assert.assertEquals(limit,"true");  //判断合约是否限买
+        boolean limit = redisTemplate.opsForHash().hasKey("contract:forbidden:buy","50181116102022");  //判断哈希key是否存在
+        Assert.assertEquals(limit,true);  //判断合约是否限买
     }
 }

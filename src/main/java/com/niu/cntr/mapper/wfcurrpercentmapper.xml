@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.niu.cntr.mapper.wfcurrpercentmapper">
+
+    <resultMap type="com.niu.cntr.entity.wfcurrpercent" id="BaseResultMap" autoMapping="true">
+    </resultMap>
+
+    <update id="updatewfcurrpercent">
+        update wfcurrpercent
+        <set>
+            assetValue = assetValue + #{profit},
+            currentCash = currentCash + #{profit},
+            currentBalance = currentBalance + #{profit}
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

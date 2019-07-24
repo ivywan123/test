@@ -1,5 +1,7 @@
 package com.niu.cntr.cntrsys;
 
+import com.niu.cntr.Service.CntrDaoImpl.wfcurrpercentServiceImpl;
+import com.niu.cntr.Service.CntrService.WfcurrpercentService;
 import com.niu.cntr.Service.TradeDaoImpl.T_cntrServiceImpl;
 import com.niu.cntr.Service.TradeService.T_cntrService;
 import com.niu.cntr.entity.wftransaction;
@@ -44,7 +46,6 @@ public class ContractleverCapital_closeTest {
     }
 
     //6、使用可提现金（利润+非杠杆）放大，盘后，有可提，需验证合约累计盈亏=利润  无同步市值接口
-
     public void testContracts_leverCapital_flag1() {
         //todo:市值没有更新，无利润
         //合约追加非杠杆
@@ -56,9 +57,13 @@ public class ContractleverCapital_closeTest {
         Long cntrId = wf.getTradeId();
         t_cntrService.updateProfit(profit,cntrId);
         Action.sleep(30000);
+        WfcurrpercentService wfcurrpercentService = new wfcurrpercentServiceImpl();
+        Long tradeId = wf.getId();
+        wfcurrpercentService.updatewfcurrpercent(profit,tradeId);
+        Action.sleep(30000);
         //放大
         HashMap<String, Object> map = new HashMap<>();
-        float capitalAmount = 3000f;   //放大1000
+        float capitalAmount = 3000f;   //放大3000
         map.put("tradeId",wf.getId());
         map.put("accountId",wf.getAccountId());
         map.put("capitalAmount",capitalAmount); //放大3000，10倍，杠杆本金增加300，使用利润100，非杠杆200
@@ -69,8 +74,8 @@ public class ContractleverCapital_closeTest {
         //验证放大并断言
         Response lever = trade.contracts_leverCapital(map);
         lever.then().body("success", equalTo(true));
-//        lever.then().body("capitalOrder.unLeverSubAmount", equalTo(200));  //todo
-//        lever.then().body("capitalOrder.profitAmount", equalTo(profit));  //todo
+        lever.then().body("capitalOrder.unLeverSubAmount", equalTo(200));  //todo
+        lever.then().body("capitalOrder.profitAmount", equalTo(profit));  //todo
         lever.then().body("capitalOrder.orderType", equalTo(11003));
         lever.then().body("capitalOrder.status", equalTo(1));
     }

@@ -62,14 +62,13 @@ public class ContractCalRenewpaidCashTest {
         paidcash.then().body("success",equalTo(false));
         paidcash.then().body("errCode",equalTo("500429"));
         paidcash.then().body("status",equalTo("false"));
-        paidcash.then().body("resultMsg",equalTo("请在到期日当天 23:59前操作！"));
+        paidcash.then().body("resultMsg",equalTo("请在到期日当天 13:00前操作！"));
     }
 
     //可正常计算延期
     public void testContracts_cal_renew_paidCash_normal() {
         HashMap<String, Object> map = new HashMap<>();
-        SqlConnect sc = new SqlConnect();
-        Long tradeId = wf.getTradeId();
+        Long tradeId = wf.getId();
         int day=2;
         //修改合约到期时间（当日）
         WftransactionService wftransactionService = new wftransactionServiceImpl();

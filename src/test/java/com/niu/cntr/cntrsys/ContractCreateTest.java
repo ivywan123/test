@@ -74,7 +74,7 @@ public class ContractCreateTest {
         wf.setAccountId(re.path("trade.accountId"));
         re.then().body("success", equalTo(true));
         re.then().body("trade.status", equalTo(1));
-        re.then().body("trade.wfPercent", equalTo(wfPercent));
+        re.then().body("trade.wfPercent", equalTo(Integer.parseInt(wfPercent.toString())));
 
     }
 }
