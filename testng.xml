@@ -8,8 +8,8 @@
     <test name="allTestsInAPackage">
         <groups>
             <run>
-                <include name="open" />
-                <exclude name="close" />
+                <include name="close" />
+                <exclude name="open" />
             </run>
         </groups>
 
