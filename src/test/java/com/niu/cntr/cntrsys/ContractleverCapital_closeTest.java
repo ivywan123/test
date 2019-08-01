@@ -7,6 +7,8 @@ import com.niu.cntr.Service.TradeService.T_cntrService;
 import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 import io.restassured.response.Response;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeGroups;
@@ -45,6 +47,8 @@ public class ContractleverCapital_closeTest {
         func.trade_delete(wf.getId(),wf.getAccountId());
     }
 
+    @Feature("放大合约")
+    @Description("可提现金放大-盘后")
     //6、使用可提现金（利润+非杠杆）放大，盘后，有可提，需验证合约累计盈亏=利润  无同步市值接口
     public void testContracts_leverCapital_flag1() {
         //todo:市值没有更新，无利润

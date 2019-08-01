@@ -4,6 +4,8 @@ import com.niu.cntr.CntrConfig;
 import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.testng.annotations.AfterMethod;
@@ -48,7 +50,8 @@ public class ContractDeleteTest {
     public void tearDown() {
     }
 
-
+    @Feature("删除合约")
+    @Description("删除合约-冒烟用例")
     public void testContracts_delete() {
         //新增合约
         HashMap<String, Object> map = new HashMap<>();

@@ -4,6 +4,8 @@ import com.github.fge.jsonschema.cfg.ValidationConfiguration;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.niu.cntr.CntrConfig;
 import com.niu.cntr.inspect.Action;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.testng.annotations.BeforeMethod;
@@ -35,6 +37,8 @@ public class ProductcalculationTest {
     }
 
     //1、不带初始周期和用户账户，预计算一个财云按天合约，2000,6倍
+    @Feature("新增合约预计算")
+    @Description("新增合约预计算-冒烟用例")
     @Test(dataProvider = "productcal")
     public void product_calculation(String productId,Long brandId,Long borrowAmount,int pzMultiple,int initiDuration,Long accountId) {
         HashMap<String,Object> map = new HashMap<>();
@@ -72,6 +76,8 @@ public class ProductcalculationTest {
         };
     }
 
+    @Feature("新增合约预计算")
+    @Description("新增合约预计算-产品初始周期数无效")
     @Test(dataProvider = "initiDuration")
     //3、验证初始周期数参数，传的话，判断是否在产品列表范围中，不在报错；在的话用传的参数
     public void product_calculation_initiDuration(String productId,Long brandId,Integer init) {

@@ -1,20 +1,15 @@
 package com.niu.cntr.cntrsys;
 
-import com.niu.cntr.Service.CntrDaoImpl.brandServiceImpl;
 import com.niu.cntr.Service.CntrDaoImpl.wftransactionServiceImpl;
-import com.niu.cntr.Service.CntrService.BrandService;
 import com.niu.cntr.Service.CntrService.WftransactionService;
-import com.niu.cntr.Service.TradeDaoImpl.RoleServiceImpl;
 import com.niu.cntr.Service.TradeDaoImpl.T_cntrServiceImpl;
-import com.niu.cntr.Service.TradeService.RoleService;
 import com.niu.cntr.Service.TradeService.T_cntrService;
-import com.niu.cntr.entity.brand;
-import com.niu.cntr.entity.role;
 import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
-import com.niu.cntr.inspect.SqlConnect;
 import com.niu.cntr.redisConfig.redisUtils;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 import io.restassured.response.Response;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.testng.Assert;
@@ -22,10 +17,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 
@@ -63,6 +55,8 @@ public class ContractRenewTest {
 
 
     //不符合操作时间
+    @Feature("合约展期")
+    @Description("合约展期-不符合操作时间")
     public void testContracts_renew_noTime() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("tradeId",wf.getId());
@@ -81,6 +75,8 @@ public class ContractRenewTest {
 
 
     //已结算的合约延期报错
+    @Feature("合约展期")
+    @Description("合约展期-已结算的合约延期报错")
     public void testContracts_renew_noStatus() {
         //结算合约
         func.trade_delete(wf.getId(),wf.getAccountId());
@@ -101,6 +97,8 @@ public class ContractRenewTest {
 
 
     //非盈利的合约延期报错
+    @Feature("合约展期")
+    @Description("合约展期-非盈利的合约延期报错")
     public void testContracts_renew_noProfit() {
         WftransactionService wftransactionService = new wftransactionServiceImpl();
         Integer result = wftransactionService.updateEndtradedate(wf);
@@ -122,6 +120,8 @@ public class ContractRenewTest {
 
 
     //正常延期
+    @Feature("合约展期")
+    @Description("合约展期-正常延期")
     public void testContracts_renew_normal() {
         WftransactionService wftransactionService = new wftransactionServiceImpl();
         Integer result = wftransactionService.updateEndtradedate(wf);

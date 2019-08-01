@@ -5,6 +5,8 @@ import com.niu.cntr.CntrConfig;
 import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.testng.annotations.AfterMethod;
@@ -45,8 +47,11 @@ public class ContractCreateTest {
         func.trade_delete(wf.getId(), wf.getAccountId());
     }
 
+
     //新增按天合约
     //todo：dataprovider
+    @Feature("新增合约")
+    @Description("新增合约-冒烟用例")
     public void testContract_create() {
         String productid = "52825118558251";
         BigDecimal borrowAmount = new BigDecimal(3000);

@@ -4,6 +4,8 @@ import com.niu.cntr.CntrConfig;
 import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 import io.restassured.response.Response;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -51,6 +53,8 @@ public class ContractCapitalTest {
     }
 
 
+    @Feature("追加非杠杆")
+    @Description("追加非杠杆-正例")
     //按天合约追加非杠杆100.23
     public void testContracts_capital() {
         //新增合约
@@ -83,7 +87,8 @@ public class ContractCapitalTest {
 
     }
 
-
+    @Feature("追加非杠杆")
+    @Description("追加非杠杆-反例，小于总操盘1%")
     //按天合约追加非杠杆0.23
     public void testContracts_capital_no() {
         //新增合约

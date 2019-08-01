@@ -1,6 +1,8 @@
 package com.niu.cntr.cntrsys;
 
 import com.niu.cntr.CntrConfig;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
@@ -37,6 +39,8 @@ public class ProductTest {
     return new Object[][]{{"52825118558251","52989279149851","product.productName[0]","财云-按天操盘"}};
     }
 
+    @Feature("产品查询")
+    @Description("产品查询-冒烟用例")
     @Test(dataProvider = "productquery")
     void queryone(String productId,String brandId,String expt,String exptvalue){
         product.queryone(productId,Long.parseLong(brandId)).then().spec(product.getResponseSpec())

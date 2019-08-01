@@ -6,6 +6,8 @@ import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
 import com.niu.cntr.inspect.SqlConnect;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 import io.restassured.response.Response;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -47,7 +49,8 @@ public class ContractCalRenewpaidDayTest {
         func.trade_delete(wf.getId(), wf.getAccountId());
     }
 
-
+    @Feature("合约展期预计算天数")
+    @Description("合约展期预计算天数-非到期日当天 13:00前不能操作")
     public void testContracts_cal_renew_paidDay_noTime() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("tradeId",wf.getId());
@@ -62,7 +65,8 @@ public class ContractCalRenewpaidDayTest {
 
     }
 
-
+    @Feature("合约展期预计算天数")
+    @Description("合约展期预计算天数-正例")
     public void testContracts_cal_renew_paidDay_normal() {
         HashMap<String, Object> map = new HashMap<>();
         Long tradeId = wf.getId();

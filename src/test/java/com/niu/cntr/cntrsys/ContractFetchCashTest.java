@@ -4,6 +4,10 @@ import com.niu.cntr.CntrConfig;
 import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Features;
+import io.qameta.allure.Stories;
 import io.restassured.response.Response;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -46,6 +50,8 @@ public class ContractFetchCashTest {
 
 
     //缩小合约，提取5.36
+    @Feature("提取现金")
+    @Description("提取现金冒烟用例")
     public void testContracts_fetchCash() {
         //新增合约
         HashMap<String, Object> map = new HashMap<>();

@@ -4,6 +4,8 @@ import com.niu.cntr.CntrConfig;
 import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 import io.restassured.response.Response;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -56,6 +58,8 @@ public class ContractreduceCapitalTest {
     }
 
     //按天合约缩小500
+    @Feature("缩小合约")
+    @Description("缩小合约-冒烟用例")
     public void testContracts_reduceCapital() {
         HashMap<String, Object> map = new HashMap<>();
         BigDecimal reduceAmount = new BigDecimal(500);   //缩小500
@@ -90,6 +94,8 @@ public class ContractreduceCapitalTest {
     }
 
     //2、合约状态检查（已结束合约缩小）
+    @Feature("缩小合约")
+    @Description("缩小合约-已结束合约缩小")
     public void testContracts_reduceCapital_close() {
         //结算合约
         func.trade_delete(wf.getId(),wf.getAccountId());
@@ -106,6 +112,8 @@ public class ContractreduceCapitalTest {
     }
 
     //3、无持仓无委托缩小到0，校验借款和杠杆是否为0
+    @Feature("缩小合约")
+    @Description("缩小合约-无持仓无委托缩小到0")
     public void testContracts_reduceCapital_zero(){
         HashMap<String, Object> map = new HashMap<>();
         //查询合约详情，确定缩小金额为借款金额

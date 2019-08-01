@@ -2,6 +2,8 @@ package com.niu.cntr.cntrsys;
 
 import com.niu.cntr.CntrConfig;
 import com.niu.cntr.func.Func;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 import io.restassured.response.Response;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -31,7 +33,8 @@ public class ContractQueryDetailTest {
     public void tearDown() {
     }
 
-
+    @Feature("查询合约详情")
+    @Description("查询合约详情-冒烟用例")
     public void testContracts_queryContractDetail() {
         //新增合约
         HashMap<String, Object> map = new HashMap<>();

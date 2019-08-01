@@ -1,12 +1,13 @@
 package com.niu.cntr.cntrsys;
 
-import com.mysql.jdbc.StringUtils;
 import com.niu.cntr.CntrConfig;
 import com.niu.cntr.Service.TradeDaoImpl.T_cntr_posServiceImpl;
 import com.niu.cntr.Service.TradeService.T_cntr_posService;
 import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.testng.Assert;
@@ -59,7 +60,8 @@ public class ContractConvertTest {
     }
 
     //1、合约无停牌股
-
+    @Feature("停牌转合约")
+    @Description("停牌转合约-合约无停牌股")
     public void testContracts_convert_nostk(){
         Product product = new Product();
         HashMap<String, Object> map = new HashMap<>();
@@ -109,6 +111,8 @@ public class ContractConvertTest {
 
     //4、合约有多支停牌股，传入全部停牌股（normal） 原合约终止和保留
     //盘中
+    @Feature("停牌转合约")
+    @Description("停牌转合约-合约有多支停牌股，传入全部停牌股（normal） 原合约终止和保留")
     @Test(dataProvider="retain")
     public void testContracts_convert(boolean retain) {
         Product product = new Product();

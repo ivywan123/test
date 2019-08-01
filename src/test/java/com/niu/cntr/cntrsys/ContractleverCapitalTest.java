@@ -6,6 +6,8 @@ import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
 import com.niu.cntr.redisConfig.redisUtils;
+import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
 import io.restassured.response.Response;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.testng.annotations.*;
@@ -64,6 +66,8 @@ public class ContractleverCapitalTest {
 
     }
 
+    @Feature("放大合约")
+    @Description("放大合约-资金池不满足")
     @Test(groups = {"open","lever"})
     //1、资金池不满足
     public void testContracts_leverCapital_NoCatital(){
@@ -97,6 +101,8 @@ public class ContractleverCapitalTest {
     }
 
     //2、已结束合约放大
+    @Feature("放大合约")
+    @Description("放大合约-已结束合约放大")
     public void testContracts_leverCapital_close(){
         //结算合约
         func.trade_delete(wf.getId(),wf.getAccountId());
@@ -114,6 +120,8 @@ public class ContractleverCapitalTest {
     }
 
     //3、放大借款<可申请范围 小于1000  大于5000000
+    @Feature("放大合约")
+    @Description("放大合约-放大借款不满足申请范围")
     public void testContracts_leverCapital_out() {
         HashMap<String, Object> map = new HashMap<>();
         float capitalAmount = 100f;   //放大100
@@ -132,6 +140,8 @@ public class ContractleverCapitalTest {
     }
 
     //4、放大借款不为千的整数倍
+    @Feature("放大合约")
+    @Description("放大合约-放大借款不为千的整数倍")
     public void testContracts_leverCapital_Nomoney() {
         HashMap<String, Object> map = new HashMap<>();
         float capitalAmount = 1100f;   //放大1100
@@ -148,6 +158,8 @@ public class ContractleverCapitalTest {
 
 
     //5、不使用可提现金，按天合约放大1000
+    @Feature("放大合约")
+    @Description("放大合约-不使用可提现金正常放大")
     public void testContracts_leverCapital() {
         HashMap<String, Object> map = new HashMap<>();
         BigDecimal capitalAmount = new BigDecimal(1000);   //放大1000
