@@ -9,6 +9,7 @@ import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeGroups;
@@ -48,6 +49,7 @@ public class ContractleverCapital_closeTest {
     }
 
     @Feature("放大合约")
+    @Story("可提现金放大-盘后")
     @Description("可提现金放大-盘后")
     //6、使用可提现金（利润+非杠杆）放大，盘后，有可提，需验证合约累计盈亏=利润  无同步市值接口
     public void testContracts_leverCapital_flag1() {

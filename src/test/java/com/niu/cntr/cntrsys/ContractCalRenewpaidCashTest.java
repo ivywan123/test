@@ -8,6 +8,7 @@ import com.niu.cntr.inspect.Action;
 import com.niu.cntr.inspect.SqlConnect;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -53,6 +54,7 @@ public class ContractCalRenewpaidCashTest {
 
 
     @Feature("合约展期预计算现金")
+    @Story("合约展期预计算现金-非到期日当天 13:00前不能操作")
     @Description("合约展期预计算现金-非到期日当天 13:00前不能操作")
     //非到期日当天 13:00前操作
     public void testContracts_cal_renew_paidCash_noTime() {
@@ -70,6 +72,7 @@ public class ContractCalRenewpaidCashTest {
     }
 
     @Feature("合约展期预计算现金")
+    @Story("合约展期预计算现金-正例")
     @Description("合约展期预计算现金-正例")
     //可正常计算延期
     public void testContracts_cal_renew_paidCash_normal() {

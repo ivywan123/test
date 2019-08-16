@@ -8,6 +8,7 @@ import com.niu.cntr.inspect.Action;
 import com.niu.cntr.inspect.SqlConnect;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -50,6 +51,7 @@ public class ContractCalRenewpaidDayTest {
     }
 
     @Feature("合约展期预计算天数")
+    @Story("合约展期预计算天数-非到期日当天 13:00前不能操作")
     @Description("合约展期预计算天数-非到期日当天 13:00前不能操作")
     public void testContracts_cal_renew_paidDay_noTime() {
         HashMap<String, Object> map = new HashMap<>();
@@ -66,6 +68,7 @@ public class ContractCalRenewpaidDayTest {
     }
 
     @Feature("合约展期预计算天数")
+    @Story("合约展期预计算天数-正例")
     @Description("合约展期预计算天数-正例")
     public void testContracts_cal_renew_paidDay_normal() {
         HashMap<String, Object> map = new HashMap<>();

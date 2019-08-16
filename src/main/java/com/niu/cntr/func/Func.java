@@ -7,13 +7,14 @@ import com.niu.cntr.cntrsys.TradeClient;
 import com.niu.cntr.inspect.Action;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 
 public class Func {
-
+    private static Logger logger = Logger.getLogger(Func.class);
     /**
     public static void  main(String[] args) throws IOException {
         Response re = trade_reduce(50190516102039L,53897715489425L,100);

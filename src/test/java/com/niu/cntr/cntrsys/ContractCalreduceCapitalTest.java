@@ -5,6 +5,7 @@ import com.niu.cntr.entity.wftransaction;
 import com.niu.cntr.func.Func;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -48,6 +49,7 @@ public class ContractCalreduceCapitalTest {
 
 
     @Feature("缩小合约预计算")
+    @Story("缩小合约预计算冒烟用例")
     @Description("缩小合约预计算冒烟用例")
     //按天合约缩小500
     //todo:dataprovider

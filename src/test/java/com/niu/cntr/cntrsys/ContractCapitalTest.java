@@ -6,6 +6,7 @@ import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -54,6 +55,7 @@ public class ContractCapitalTest {
 
 
     @Feature("追加非杠杆")
+    @Story("追加非杠杆-正例")
     @Description("追加非杠杆-正例")
     //按天合约追加非杠杆100.23
     public void testContracts_capital() {
@@ -88,6 +90,7 @@ public class ContractCapitalTest {
     }
 
     @Feature("追加非杠杆")
+    @Story("追加非杠杆-反例，小于总操盘1%")
     @Description("追加非杠杆-反例，小于总操盘1%")
     //按天合约追加非杠杆0.23
     public void testContracts_capital_no() {

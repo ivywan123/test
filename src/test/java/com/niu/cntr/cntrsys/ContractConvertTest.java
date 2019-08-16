@@ -8,6 +8,7 @@ import com.niu.cntr.func.Func;
 import com.niu.cntr.inspect.Action;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.testng.Assert;
@@ -61,6 +62,7 @@ public class ContractConvertTest {
 
     //1、合约无停牌股
     @Feature("停牌转合约")
+    @Story("停牌转合约-合约无停牌股")
     @Description("停牌转合约-合约无停牌股")
     public void testContracts_convert_nostk(){
         Product product = new Product();
@@ -112,6 +114,7 @@ public class ContractConvertTest {
     //4、合约有多支停牌股，传入全部停牌股（normal） 原合约终止和保留
     //盘中
     @Feature("停牌转合约")
+    @Story("停牌转合约-合约有多支停牌股，传入全部停牌股")
     @Description("停牌转合约-合约有多支停牌股，传入全部停牌股（normal） 原合约终止和保留")
     @Test(dataProvider="retain")
     public void testContracts_convert(boolean retain) {

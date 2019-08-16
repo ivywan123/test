@@ -9,6 +9,7 @@ import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
+import org.apache.log4j.Logger;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
@@ -24,12 +25,17 @@ import static io.restassured.parsing.Parser.*;
  * Created by admin on 2019/4/28.
  */
 public class Api {
-    HashMap<String,Object> query = new HashMap<>();
+    HashMap<String, Object> query = new HashMap<>();
+    private static Logger logger = Logger.getLogger(Api.class);
 //    RestAssured.registerParser("text/plain", JSON);
 
-    public Api(){useRelaxedHTTPSValidation();}
+    public Api() {
+        useRelaxedHTTPSValidation();
+    }
 
-    public RequestSpecification getDefaultRequestSpecification(){return given().contentType("application/json").log().all();}
+    public RequestSpecification getDefaultRequestSpecification() {
+        return given().contentType("application/json").log().all();
+    }
 
     public static String template(String path, HashMap<String, Object> map) {
         DocumentContext documentContext = JsonPath.parse(Api.class
@@ -54,16 +60,16 @@ public class Api {
         //return documentContext.jsonString();
     }
 
-    public Response templateFromSwagger(String path, String pattern, HashMap<String,Object> map){
+    public Response templateFromSwagger(String path, String pattern, HashMap<String, Object> map) {
         //支持从swagger自动生成接口定义并发送
         DocumentContext documentContext = JsonPath.parse(Api.class.getResourceAsStream(path));
         map.entrySet().forEach(entry -> {
-            documentContext.set(entry.getKey(),entry.getValue());
+            documentContext.set(entry.getKey(), entry.getValue());
         });
 
         String method = documentContext.read("method");
         String url = documentContext.read("url");
-        return getDefaultRequestSpecification().when().request(method,url);
+        return getDefaultRequestSpecification().when().request(method, url);
     }
 
 
@@ -79,16 +85,15 @@ public class Api {
 
 
     public Restful updateApiFromMap(Restful restful, HashMap<String, Object> map) {
-        if(map==null){
-            return  restful;
+        if (map == null) {
+            return restful;
         }
         //判断url中是否有需要替换的map数据
-        if(restful.url.contains("{")){
-            String substr =restful.url.substring(restful.url.indexOf("{")+1,restful.url.indexOf("}"));
-            for(String key : map.keySet()){
-                if(key.equals(substr)){
-                    System.out.println(map.get(key));
-                    restful.url = restful.url.replace("{"+substr+"}",map.get(key).toString());
+        if (restful.url.contains("{")) {
+            String substr = restful.url.substring(restful.url.indexOf("{") + 1, restful.url.indexOf("}"));
+            for (String key : map.keySet()) {
+                if (key.equals(substr)) {
+                    restful.url = restful.url.replace("{" + substr + "}", map.get(key).toString());
                 }
             }
         }
@@ -103,8 +108,9 @@ public class Api {
         //post类型的接口带参数，查询类的接口为post类型
         map.entrySet().forEach(entry -> {
             restful.query.replace(entry.getKey(), entry.getValue().toString());
-            System.out.println(restful.query);
+
         });
+//        logger.info(restful.query);
 
         if (restful.method.toLowerCase().contains("post")) {
             if (map.containsKey("_body")) {
@@ -133,7 +139,7 @@ public class Api {
         if (restful.body != null) {
             requestSpecification.body(restful.body);
         }
-        String[] url=updateUrl(restful.url);
+        String[] url = updateUrl(restful.url);
 
         return requestSpecification.log().all()
                 .when().request(restful.method, restful.url)
@@ -158,11 +164,13 @@ public class Api {
             });
         }
 
+        String[] url = updateUrl(restful.url);
+        logger.info(url[1]);
+
         if (restful.body != null) {
             requestSpecification.body(restful.body);
+            logger.info(restful.body);
         }
-
-        String[] url=updateUrl(restful.url);
 
         return requestSpecification
                 .header("Host", url[0])
@@ -174,28 +182,27 @@ public class Api {
     private String[] updateUrl(String url) {
         //fixed: 多环境支持，替换url，更新host的header
 
-        HashMap<String, String> hosts=CntrConfig.getInstance().env.get(CntrConfig.getInstance().current);
+        HashMap<String, String> hosts = CntrConfig.getInstance().env.get(CntrConfig.getInstance().current);
 
-        String host="";
-        String urlNew="";
-        for(Map.Entry<String, String> entry : hosts.entrySet()){
-            if(url.contains(entry.getKey())){
-                host=entry.getKey();
-                urlNew=url.replace(entry.getKey(), entry.getValue());
+        String host = "";
+        String urlNew = "";
+        for (Map.Entry<String, String> entry : hosts.entrySet()) {
+            if (url.contains(entry.getKey())) {
+                host = entry.getKey();
+                urlNew = url.replace(entry.getKey(), entry.getValue());
             }
         }
 
         return new String[]{host, urlNew};
     }
 
-    public String updateUrlparam(String url,HashMap<String, Object> map){
+    public String updateUrlparam(String url, HashMap<String, Object> map) {
         //如果url中带参数，就用参数替换
-        if(url.contains("{")){
-            String substr =url.substring(url.indexOf("{")+1,url.indexOf("}"));
-            for(String key : map.keySet()){
-                if(key.equals(substr)){
-                    System.out.println(map.get(key));
-                    url = url.replace("{"+substr+"}",map.get(key).toString());
+        if (url.contains("{")) {
+            String substr = url.substring(url.indexOf("{") + 1, url.indexOf("}"));
+            for (String key : map.keySet()) {
+                if (key.equals(substr)) {
+                    url = url.replace("{" + substr + "}", map.get(key).toString());
                 }
             }
         }

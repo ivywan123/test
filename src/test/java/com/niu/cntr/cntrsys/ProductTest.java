@@ -3,6 +3,8 @@ package com.niu.cntr.cntrsys;
 import com.niu.cntr.CntrConfig;
 import io.qameta.allure.Description;
 import io.qameta.allure.Feature;
+import io.qameta.allure.Stories;
+import io.qameta.allure.Story;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
@@ -40,6 +42,7 @@ public class ProductTest {
     }
 
     @Feature("产品查询")
+    @Story("产品查询-冒烟用例")
     @Description("产品查询-冒烟用例")
     @Test(dataProvider = "productquery")
     void queryone(String productId,String brandId,String expt,String exptvalue){

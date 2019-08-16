@@ -1,6 +1,8 @@
 package com.niu.cntr.TezitongAll;
 
 import java.util.Iterator;
+
+import io.qameta.allure.Attachment;
 import org.testng.ITestContext;
 import org.testng.ITestNGMethod;
 import org.testng.ITestResult;
@@ -14,6 +16,8 @@ public class TestngListener extends TestListenerAdapter {
     public void onTestFailure(ITestResult tr) {
         super.onTestFailure(tr);
         logger.info(tr.getName() + " Failure");
+        //用例失败时，打印错误信息
+        printFailure(tr);
     }
 
     @Override
@@ -51,5 +55,10 @@ public class TestngListener extends TestListenerAdapter {
 
             }
         }
+    }
+
+    @Attachment(value = " print failure",type = "string")
+    public String printFailure(ITestResult tr){
+        return tr.toString();
     }
 }
