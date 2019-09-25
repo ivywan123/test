@@ -151,7 +151,7 @@ public class Trade extends Contact {
         logger.info(url);
         logger.info(map.toString());
         Response re = getDefaultRequestSpecification().body(body)
-                .when().post(url)
+                .when().delete(url)
                 .then().log().all().extract().response();
         logger.info(re.body().asString());
         return re;
