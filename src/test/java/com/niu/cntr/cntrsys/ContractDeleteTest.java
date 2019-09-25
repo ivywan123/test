@@ -50,8 +50,8 @@ public class ContractDeleteTest {
     public void tearDown() {
     }
 
-    @Feature("删除合约")
-    @Description("删除合约-冒烟用例")
+    @Feature("终止合约")
+    @Description("终止合约-冒烟用例")
     public void testContracts_delete() {
         //新增合约
         HashMap<String, Object> map = new HashMap<>();
