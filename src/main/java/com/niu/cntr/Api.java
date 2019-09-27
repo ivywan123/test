@@ -25,7 +25,7 @@ import static io.restassured.parsing.Parser.*;
  * Created by admin on 2019/4/28.
  */
 public class Api {
-    HashMap<String, Object> query = new HashMap<>();
+//    HashMap<String, Object> query = new HashMap<>();
     private static Logger logger = Logger.getLogger(Api.class);
 //    RestAssured.registerParser("text/plain", JSON);
 
