@@ -26,7 +26,7 @@ public class CntrConfig {
     public static CntrConfig getInstance(){
         if(cntrConfig==null){
             cntrConfig=load("/conf/CntrConfig.yaml");
-            logger.info(cntrConfig);
+//            logger.info(cntrConfig);
             logger.info("env:"+ cntrConfig.current);
             logger.info("停牌股配置："+ cntrConfig.suspendStk);
 //            Map.Entry<String,String> item = cntrConfig.suspendStk.entrySet().stream().findFirst().orElse(null);
